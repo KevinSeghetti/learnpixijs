@@ -1,14 +1,11 @@
 // modules/generator/reducers
 
 import { types as generatorTypes } from 'modules/generator/index'
-import { CreateGameObject } from 'modules/common/gameObject'
+import { CreateGameObject, CreateFallingObject, CreateGeneratorObject, GameTick } from 'modules/common/gameObject'
 
 import CreateLogger from 'components/loggingConfig'
 
 let log = CreateLogger("generator")
-
-
-//===============================================================================
 
 //===============================================================================
 
@@ -35,7 +32,7 @@ const GENERATOR_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: state.gameObjects.map( (entry,index) => entry.tick(entry,action.delta,clipping) )
+          gameObjects: GameTick(state.gameObjects,action.delta,clipping)
       }
   },
 
@@ -95,10 +92,28 @@ const CreateGameObjects = () =>
 {
     let objects = []
 
-    for(let i = 0;i < 100; ++i)
+    const rotationSpeed = 0.25
+    const movementSpeed = 5
+    const objectCount = 2
+    for(let i = 0;i < objectCount; ++i)
     {
-        objects.push(CreateGameObject(200*Math.random(),200*Math.random(),0,10*Math.random(),10*Math.random(),2*Math.random(),Math.round(5*Math.random())))
+        objects.push(
+            CreateGameObject(
+                generatorTypes.stageOptions.width*Math.random(),generatorTypes.stageOptions.height*Math.random(),0,
+                movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
+                Math.round(4*Math.random()))
+            )
     }
+
+    const CreateGeneratedObject = (x,y) =>
+    {
+        //console.log("CreateGeneratedObject:",x,y)
+        return CreateFallingObject(
+            x,y,2,
+        )
+    }
+    const generationRate = 5
+    objects.push(CreateGeneratorObject(0,0,generatorTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
     return objects
 }
 

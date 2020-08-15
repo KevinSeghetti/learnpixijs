@@ -16,11 +16,11 @@ let log = CreateLogger("first")
 
 const InnerObjects = (props) =>
 {
-    console.log("InnerObjects ",props)
+    //console.log("InnerObjects ",props)
 
     let objectList = props.first.gameObjects.map( (entry,index) =>
     {
-            console.log("inner",entry,index)
+            //console.log("inner",entry,index)
             return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
     }
     )

@@ -1,7 +1,7 @@
 // modules/first/reducers
 
 import { types as firstTypes } from 'modules/first/index'
-import { CreateGameObject } from 'modules/common/gameObject'
+import { CreateGameObject,GameTick } from 'modules/common/gameObject'
 
 import CreateLogger from 'components/loggingConfig'
 
@@ -32,7 +32,7 @@ const FIRST_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: state.gameObjects.map( (entry,index) => entry.tick(entry,action.delta,clipping) )
+          gameObjects: GameTick(state.gameObjects,action.delta,clipping)
       }
   },
 }
@@ -45,14 +45,22 @@ const CreateGameObjects = () =>
 {
     let objects = []
 
-    for(let i = 0;i < 100; ++i)
+    const rotationSpeed = 0.25
+    const movementSpeed = 5
+    const objectCount = 100
+    for(let i = 0;i < objectCount; ++i)
     {
-        objects.push(CreateGameObject(400*Math.random(),400*Math.random(),0,7*Math.random(),7*Math.random(),2*Math.random(),Math.round(5*Math.random())))
+        objects.push(
+            CreateGameObject(
+                firstTypes.stageOptions.width*Math.random(),firstTypes.stageOptions.height*Math.random(),0,
+                movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
+                Math.round(4*Math.random()))
+            )
     }
-
     return objects
 }
 
+//===============================================================================
 
 const firstInitialState = {
   gameObjects: CreateGameObjects()

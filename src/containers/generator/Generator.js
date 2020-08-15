@@ -19,18 +19,26 @@ const OPTIONS = {
   height: 600,
 };
 
-
 //===============================================================================
+
+// kts TODO: move InnerObjects into shared file (and rename)
 
 const InnerObjects = (props) =>
 {
     //console.log("inner ",props)
 
     let objectList = props.generator.gameObjects.map( (entry,index) =>
-        <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={0} rotation={entry.position.r} />
+    {
+        if(entry.frameIndex >= 0)
+        {
+            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
+        }
+        return null
+    }
     )
 
     const animate = delta => {
+        // kts smell: this is in 60ths of a second
         props.tick(delta)
     };
 
@@ -60,8 +68,6 @@ const InnerObjectsWithApp = withApp(InnerObjects)
 
 export const Generator = props => {
   log.trace("Generator renderer:",props)
-
-
 
   return (
     <div className="Generator" >
