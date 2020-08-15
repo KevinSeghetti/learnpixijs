@@ -1,10 +1,10 @@
-// modules/pixijs/reducers
+// modules/generator/reducers
 
-import { types as pixijsTypes } from 'modules/pixijs/index'
+import { types as generatorTypes } from 'modules/generator/index'
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("pixijs")
+let log = CreateLogger("generator")
 
 // ------------------------------------
 // Action Handlers
@@ -78,8 +78,8 @@ const UpdateObjectSpeed = (position,velocity,delta) =>
     }
 }
 
-const PIXIJS_ACTION_HANDLERS = {
-  [pixijsTypes.TICK                  ]       : (state, action) =>
+const GENERATOR_ACTION_HANDLERS = {
+  [generatorTypes.TICK                  ]       : (state, action) =>
   {
       let delta = action.delta
       return {
@@ -97,7 +97,7 @@ const PIXIJS_ACTION_HANDLERS = {
       }
   },
 
-  [pixijsTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
+  [generatorTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -108,7 +108,7 @@ const PIXIJS_ACTION_HANDLERS = {
           },
       }
   },
-  [pixijsTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
+  [generatorTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -120,7 +120,7 @@ const PIXIJS_ACTION_HANDLERS = {
       }
   },
 
-  [pixijsTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
+  [generatorTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -131,7 +131,7 @@ const PIXIJS_ACTION_HANDLERS = {
           },
       }
   },
-  [pixijsTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
+  [generatorTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
   {
       return {
           ...state,
@@ -184,7 +184,7 @@ const CreateGameObjects = () =>
 }
 
 
-const pixijsInitialState = {
+const generatorInitialState = {
   player:
   {
       position:
@@ -196,10 +196,10 @@ const pixijsInitialState = {
   gameObjects: CreateGameObjects()
 }
 
-export default function reducer(state = pixijsInitialState, action) {
-  log.trace(  'pixijsReducer(', state, ', ',action,')')
-  //console.log(  'pixijsReducer', state ,action)
-    const handler = PIXIJS_ACTION_HANDLERS[action.type]
+export default function reducer(state = generatorInitialState, action) {
+  log.trace(  'generatorReducer(', state, ', ',action,')')
+  //console.log(  'generatorReducer', state ,action)
+    const handler = GENERATOR_ACTION_HANDLERS[action.type]
     return handler ? handler(state, action) : state
 }
 

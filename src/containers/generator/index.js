@@ -3,23 +3,23 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Pixijs.scss';
+import './Generator.scss';
 
-import { Pixijs } from './Pixijs'
-import { actions as pixijsActions } from 'modules/pixijs'
+import { Generator } from './Generator'
+import { actions as generatorActions } from 'modules/generator'
 
 const mapStateToProps = (state) => {
     return {
         state         : state,
-        pixijs          : state.app.pixijs,
+        generator          : state.app.generator,
     }
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-    tick : (delta) => pixijsActions.pixijsActionsTick(delta)
+    tick : (delta) => generatorActions.generatorActionsTick(delta)
 }, dispatch)
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Pixijs)
+)(Generator)

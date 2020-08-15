@@ -1,20 +1,31 @@
 import React from 'react';
-import "./App.css";
-import Pixijs from "containers/pixijs";
+import { Route, Link } from 'react-router-dom'
+
 import Stats from "components/Stats";
 
-const App = () => {
-    return (
-      <div className="App">
-        <Stats />
-        <header className="App-header">
-          <h1 className="App-title">react-pixi test</h1>
-        </header>
-        <div className="App-intro">
-          <Pixijs />
-        </div>
-      </div>
-    );
-}
+import Home from "containers/home";
+import First from "containers/first";
+import Generator from "containers/generator";
+
+import "./App.scss";
+
+const App = () => (
+  <div className="root" >
+    <Stats />
+    <h2>Pixijs on react/redux tests</h2>
+    <header>
+      <Link to="/">Home</Link>
+      <Link to="/first">First</Link>
+      <Link to="/generator">Generator</Link>
+    </header>
+
+    <main>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/first" component={First} />
+      <Route exact path="/generator" component={Generator} />
+    </main>
+  </div>
+)
 
 export default App
+
