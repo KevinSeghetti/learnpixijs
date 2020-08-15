@@ -1,14 +1,16 @@
 // modules/generator/reducers
 
 import { types as generatorTypes } from 'modules/generator/index'
+import { CreateGameObject } from 'modules/common/gameObject'
 
 import CreateLogger from 'components/loggingConfig'
 
 let log = CreateLogger("generator")
 
-// ------------------------------------
-// Action Handlers
-// ------------------------------------
+
+//===============================================================================
+
+//===============================================================================
 
 const clipping =
 {
@@ -19,81 +21,21 @@ const clipping =
     },
     max:
     {
-        x: 500,
-        y: 500,
+        x: generatorTypes.stageOptions.width,
+        y: generatorTypes.stageOptions.height,
     }
 }
 
-const ClipPosition = (position, clipping) =>
-{
-    //console.log("ClipPosition",position,clipping)
-    //console.log("  ", position.x,clipping.min.x,clipping.max.x)
-    //console.log("  min", Math.max(position.x,clipping.min.x))
-    //console.log("  result",Math.min(Math.max(position.x,clipping.min.x),clipping.max.x))
-
-    return {
-        x: Math.min(Math.max(position.x,clipping.min.x),clipping.max.x),
-        y: Math.min(Math.max(position.y,clipping.min.y),clipping.max.y),
-    }
-}
-
-const MoveObject = (object, delta) =>
-{
-    let newX = object.position.x + (object.velocity.x*delta)
-    let newY = object.position.y + (object.velocity.y*delta)
-    let newR = object.position.r + (object.velocity.r*delta)
-
-    let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
-
-    let clippedR = newR
-
-    //console.log("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
-    return (
-        {
-               x: clippedX,
-               y: clippedY,
-               r: clippedR
-        }
-    )
-}
-
-const UpdateObjectSpeed = (position,velocity,delta) =>
-{
-    let xSpeed = velocity.x
-    let ySpeed = velocity.y
-
-    if(position.x === clipping.min.x || position.x === clipping.max.x)
-    {
-        xSpeed = - xSpeed
-    }
-    if(position.y === clipping.min.y || position.y === clipping.max.y)
-    {
-        ySpeed = - ySpeed
-    }
-
-    return {
-        x: xSpeed,
-        y: ySpeed,
-        r: velocity.r
-    }
-}
+// ------------------------------------
+// Action Handlers
+// ------------------------------------
 
 const GENERATOR_ACTION_HANDLERS = {
   [generatorTypes.TICK                  ]       : (state, action) =>
   {
-      let delta = action.delta
       return {
           ...state,
-          gameObjects: state.gameObjects.map( (entry,index) =>
-          {
-            let position = MoveObject(entry,delta)
-            return {
-             ...entry,
-             position : position,
-             velocity : UpdateObjectSpeed(position,entry.velocity,delta)
-            }
-          }
-          )
+          gameObjects: state.gameObjects.map( (entry,index) => entry.tick(entry,action.delta,clipping) )
       }
   },
 
@@ -149,37 +91,14 @@ const GENERATOR_ACTION_HANDLERS = {
 // Reducers
 // ------------------------------------
 
-const CreateGameObject = (x,y,rotation,vx,vy,rv) =>
-{
-    return {
-        position:
-        {
-            x: x,
-            y: y,
-            r: rotation,
-        },
-        velocity:
-        {
-            x: vx,
-            y: vy,
-            r: rv,
-        },
-
-    }
-}
-
 const CreateGameObjects = () =>
 {
     let objects = []
 
     for(let i = 0;i < 100; ++i)
     {
-        objects.push(CreateGameObject(200*Math.random(),200*Math.random(),0,10*Math.random(),10*Math.random(),2*Math.random()))
+        objects.push(CreateGameObject(200*Math.random(),200*Math.random(),0,10*Math.random(),10*Math.random(),2*Math.random(),Math.round(5*Math.random())))
     }
-
-    objects.push(CreateGameObject(50,50,0,2,2,0))
-    objects.push(CreateGameObject(100,100,10,-2,4,30))
-    objects.push(CreateGameObject(200,100,23,6,2,50))
     return objects
 }
 

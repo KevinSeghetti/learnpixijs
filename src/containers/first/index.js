@@ -6,12 +6,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './First.scss';
 
 import { First } from './First'
-import { actions as firstActions } from 'modules/first'
+import { actions as firstActions,types as firstTypes } from 'modules/first'
 
 const mapStateToProps = (state) => {
     return {
         state         : state,
         first          : state.app.first,
+        stageOptions   : firstTypes.stageOptions,
     }
 }
 

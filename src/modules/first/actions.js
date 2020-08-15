@@ -17,33 +17,5 @@ export function firstActionsTick(delta) {
   }
 }
 
-export function firstActionsMovePlayerUp(delta) {
-  return {
-    type    : firstActionsTypes.MOVE_PLAYER_UP,
-    payload : delta
-  }
-}
-
-export function firstActionsMovePlayerDown(delta) {
-  return {
-    type    : firstActionsTypes.MOVE_PLAYER_DOWN,
-    payload : delta
-  }
-}
-
-export function firstActionsMovePlayerLeft(delta) {
-  return {
-    type    : firstActionsTypes.MOVE_PLAYER_LEFT,
-    payload : delta
-  }
-}
-
-export function firstActionsMovePlayerRight(delta) {
-  return {
-    type    : firstActionsTypes.MOVE_PLAYER_RIGHT,
-    payload : delta
-  }
-}
-
 
 

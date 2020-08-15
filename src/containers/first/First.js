@@ -12,20 +12,17 @@ import CreateLogger from 'components/loggingConfig'
 
 let log = CreateLogger("first")
 
-const OPTIONS = {
-  backgroundColor: 0x1099bb,
-  width: 800,
-  height: 600,
-};
-
 //===============================================================================
 
 const InnerObjects = (props) =>
 {
-    //console.log("inner ",props)
+    console.log("InnerObjects ",props)
 
     let objectList = props.first.gameObjects.map( (entry,index) =>
-        <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={0} rotation={entry.position.r} />
+    {
+            console.log("inner",entry,index)
+            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
+    }
     )
 
     const animate = delta => {
@@ -62,7 +59,7 @@ export const First = props => {
   return (
     <div className="First" >
       <h2>First</h2>
-        <Stage options={OPTIONS}>
+        <Stage options={props.stageOptions}>
             <InnerObjectsWithApp first={props.first} tick={props.tick} />
         </Stage>
     </div>
@@ -73,6 +70,7 @@ export const First = props => {
 
 First.propTypes = {
     first      : PropTypes.object.isRequired,
+    stageOptions: PropTypes.object.isRequired,
     tick      : PropTypes.func.isRequired,
 }
 
