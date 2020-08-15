@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Pixijs.scss';
 
 import { Pixijs } from './Pixijs'
+import { actions as pixijsActions } from 'modules/pixijs'
 
 const mapStateToProps = (state) => {
     return {
@@ -15,6 +16,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+    tick : (delta) => pixijsActions.pixijsActionsTick(delta)
 }, dispatch)
 
 export default connect(

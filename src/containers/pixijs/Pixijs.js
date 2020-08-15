@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import PropTypes from 'prop-types'
 import { withApp, Container, Stage } from "react-pixi-fiber";
 import RotatingBunny from "components/BunnyExample/RotatingBunny";
@@ -21,7 +21,7 @@ const OPTIONS = {
 
 const Director = (props) =>
 {
-  console.log("Director: props = ",props)
+  //console.log("Director: props = ",props)
   return null
 }
 
@@ -29,27 +29,48 @@ const Director = (props) =>
 
 const InnerObjects = (props) =>
 {
-    console.log("inner ",props)
+    //console.log("inner ",props)
 
     let objectList = props.pixijs.gameObjects.map( (entry,index) =>
-        <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={0} rotation={0} />
+        <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={0} rotation={entry.position.r} />
     )
+
+    const animate = delta => {
+        //console.log("animate!")
+        props.tick(delta)
+      // just for fun, let's rotate mr rabbit a little
+      // delta is 1 if running at 100% performance
+      // creates frame-independent tranformation
+    //this.setState(state => ({
+    //  ...state,
+    //  rotation: state.rotation + this.props.step * delta,
+    //}));
+    };
+
+
+    useEffect(() => {
+        props.app.ticker.add(animate)
+
+        return function cleanup() {
+                   props.app.ticker.remove(animate);
+        }
+    })
 
     return (
         <Container ref={c => (window.example = c)}>
-
             <Director />
             { objectList }
-
-            <RotatingBunny x={400} y={300} texture={0} name="regular" step={0.1} />
-            <RotatingBunny x={200} y={200} texture={1} name="cool" step={0.2} />
-            <RotatingBunny x={200} y={400} texture={2} name="sport" step={-0.25} />
-            <RotatingBunny x={600} y={200} texture={3} name="cyborg" step={-0.1} />
-            <RotatingBunny x={600} y={400} texture={4} name="astronaut" step={-0.02} />
         </Container>
     )
 
 }
+
+InnerObjects.propTypes = {
+    pixijs      : PropTypes.object.isRequired,
+    tick      : PropTypes.func.isRequired,
+}
+
+//-------------------------------------------------------------------------------
 
 const InnerObjectsWithApp = withApp(InnerObjects)
 
@@ -63,7 +84,7 @@ export const Pixijs = props => {
     <div className="Pixijs" >
       <h2>Pixijs</h2>
         <Stage width={800} height={600} options={OPTIONS}>
-            <InnerObjectsWithApp pixijs={props.pixijs} />
+            <InnerObjectsWithApp pixijs={props.pixijs} tick={props.tick} />
         </Stage>
     </div>
   );
@@ -73,9 +94,8 @@ export const Pixijs = props => {
 
 Pixijs.propTypes = {
     pixijs      : PropTypes.object.isRequired,
+    tick      : PropTypes.func.isRequired,
 }
-
-
 
 //===============================================================================
 
