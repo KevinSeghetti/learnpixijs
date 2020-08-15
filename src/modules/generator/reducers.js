@@ -1,7 +1,9 @@
 // modules/generator/reducers
 
 import { types as generatorTypes } from 'modules/generator/index'
-import { CreateGameObject, CreateFallingObject, CreateGeneratorObject, GameTick } from 'modules/common/gameObject'
+import { CreateGeneratorObject } from 'modules/common/generator'
+import { CreateGameObject, CreateFallingObject } from 'modules/common/gameObject'
+import { GameTick } from 'modules/common/tick'
 
 import CreateLogger from 'components/loggingConfig'
 
