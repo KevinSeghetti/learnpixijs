@@ -6,7 +6,6 @@ import Bunny from "components/Bunny";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './Generator.scss';
-//import BunnyExample from 'components/BunnyExample'
 import CreateLogger from 'components/loggingConfig'
 
 //===============================================================================
