@@ -168,6 +168,22 @@ const CreateGameObject = (x,y,rotation,vx,vy,rv) =>
     }
 }
 
+const CreateGameObjects = () =>
+{
+    let objects = []
+
+    for(let i = 0;i < 100; ++i)
+    {
+        objects.push(CreateGameObject(200*Math.random(),200*Math.random(),0,10*Math.random(),10*Math.random(),2*Math.random()))
+    }
+
+    objects.push(CreateGameObject(50,50,0,2,2,0))
+    objects.push(CreateGameObject(100,100,10,-2,4,30))
+    objects.push(CreateGameObject(200,100,23,6,2,50))
+    return objects
+}
+
+
 const pixijsInitialState = {
   player:
   {
@@ -177,12 +193,7 @@ const pixijsInitialState = {
           y: 0
       }
   },
-  gameObjects:
-  [
-    CreateGameObject(50,50,0,2,2,0),
-    CreateGameObject(100,100,10,-2,4,30),
-    CreateGameObject(200,100,23,6,2,50),
-  ]
+  gameObjects: CreateGameObjects()
 }
 
 export default function reducer(state = pixijsInitialState, action) {
