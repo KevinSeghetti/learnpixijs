@@ -28,7 +28,7 @@ const InnerObjects = (props) =>
 
     let objectList = props.generator.gameObjects.map( (entry,index) =>
     {
-        if(entry.animation.frameIndex >= 0)
+        if(entry.animation && entry.animation.frameIndex >= 0)
         {
             return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
         }
@@ -37,8 +37,7 @@ const InnerObjects = (props) =>
     )
 
     const animate = delta => {
-        // kts smell: this is in 60ths of a second
-        props.tick(delta)
+        props.tick(props.app.ticker.elapsedMS)
     };
 
     useEffect(() => {

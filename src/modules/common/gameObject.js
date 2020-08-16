@@ -90,7 +90,7 @@ export const MoveObject = (object, delta,clipping) =>
     let newX = object.position.x + (object.velocity.x*delta)
     let newY = object.position.y + (object.velocity.y*delta)
     let newR = object.position.r + (object.velocity.r*delta)
-
+    //console.log("new",newX,newY,newR)
     let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
 
     let clippedR = newR

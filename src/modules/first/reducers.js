@@ -1,5 +1,6 @@
 // modules/first/reducers
 
+import { PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { types as firstTypes } from 'modules/first/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
@@ -47,8 +48,8 @@ const CreateGameObjects = () =>
 {
     let objects = []
 
-    const rotationSpeed = 0.25
-    const movementSpeed = 5
+    const rotationSpeed = RadiansPerSecond(Math.PI*2)
+    const movementSpeed = PixelsPerSecond(400)
     const objectCount = 100
     for(let i = 0;i < objectCount; ++i)
     {

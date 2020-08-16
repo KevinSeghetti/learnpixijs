@@ -88,8 +88,7 @@ const InnerObjects = (props) =>
     )
 
     const animate = delta => {
-        // kts smell: this is in 60ths of a second
-        props.tick(delta,keys)
+        props.tick(props.app.ticker.elapsedMS,keys)
     };
 
     useEffect(() => {

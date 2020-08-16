@@ -30,7 +30,7 @@ const InnerObjects = (props) =>
     )
 
     const animate = delta => {
-        props.tick(delta)
+        props.tick(props.app.ticker.elapsedMS)
     };
 
     useEffect(() => {
