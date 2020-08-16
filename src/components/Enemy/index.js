@@ -1,4 +1,4 @@
-// bullet
+// enemy
 import React from "react";
 import PropTypes from "prop-types";
 import { Sprite } from "react-pixi-fiber";
