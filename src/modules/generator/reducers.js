@@ -111,11 +111,11 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,2,
+            x,y,0,5,2,
         )
     }
     const generationRate = 5
-    objects.push(CreateGeneratorObject(0,0,generatorTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
+    objects.push(CreateGeneratorObject(0,2,generatorTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
     return objects
 }
 

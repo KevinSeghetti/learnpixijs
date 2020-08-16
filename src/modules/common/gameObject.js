@@ -7,8 +7,13 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
 {
     //console.log("FallingObjectTick",object,delta,clipping)
 
-    if(object.position.y === clipping.max.y)
-    {   // at the bottom of the screen, time to delete
+    if(
+       object.position.x === clipping.max.y ||
+       object.position.x === clipping.min.y ||
+       object.position.y === clipping.min.y ||
+       object.position.y === clipping.max.y
+    )
+    {   // at any edge of screen, time to delete
         return null
     }
 
@@ -18,11 +23,11 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
 
 //===============================================================================
 
-export const CreateFallingObject = (x,y,frameIndex) =>
+export const CreateFallingObject = (x,y,xDelta,yDelta,frameIndex) =>
 {
     let object = CreateGameObject(
         x,y,0,
-        0,5,0,
+        xDelta,yDelta,0,
         frameIndex
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance

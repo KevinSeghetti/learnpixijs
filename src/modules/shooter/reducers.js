@@ -112,12 +112,21 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,2,
+            x,y,0,5,2,
         )
     }
+
+    const CreateBulletObject = (x,y) =>
+    {
+        //console.log("CreateGeneratedObject:",x,y)
+        return CreateFallingObject(
+            x,y,0,-5,2,
+        )
+    }
+
     const generationRate = 5
-    objects.push(CreateGeneratorObject(0,0,shooterTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
-    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, 3))
+    objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
+    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, 3,CreateBulletObject))
     return objects
 }
 

@@ -26,11 +26,11 @@ function useKey(key) {
     const [pressed, setPressed] = useState(false)
 
     // Does an event match the key we're watching?
-    const match = event => key.toLowerCase() == event.key.toLowerCase()
+    const match = event => key.toLowerCase() === event.key.toLowerCase()
 
     // Event handlers
     const onDown = event => {
-        console.log("useKey: down",event)
+        //console.log("useKey: down",event,key,match(event))
         if (match(event)) setPressed(true)
     }
 
@@ -59,9 +59,9 @@ const InnerObjects = (props) =>
 
     let arrowLeft = useKey('arrowLeft')
     let arrowRight = useKey('arrowRight')
-    let space = useKey('space')
+    let space = useKey(' ')
 
-    //console.log('InnerObjects',arrowLeft, arrowRight)
+    //console.log('InnerObjects',arrowLeft, arrowRight,space)
     let keys = {
     }
     // kts TODO: pass array of keys to useKey

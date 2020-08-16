@@ -8,7 +8,7 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 {
     //object.wallClock
     //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject)
-    //console.log("keys",keys)
+    //console.log("PlayerTick:keys",keys)
 //    let lastGenerated = object.lastGenerated
 //  if(object.wallClock > object.lastGenerated+object.rate)
 //  {
@@ -35,6 +35,11 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 
     let newX = object.position.x + xDelta
 
+    if(keys.space)
+    {
+        AddGameObject(object.createBullet(object.position.x,object.position.y) )
+    }
+
     return {
         ...object,
         position: {...object.position, x:newX }
@@ -43,7 +48,7 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 
 //===============================================================================
 
-export const CreatePlayerObject = (x,y,frameIndex) =>
+export const CreatePlayerObject = (x,y,frameIndex,CreateBullet) =>
 {
     let object = CreateGameObject(
         x,y,0,
@@ -57,7 +62,7 @@ export const CreatePlayerObject = (x,y,frameIndex) =>
     return {
         ...object,
         lastGenerated: 0,
-
+        createBullet: CreateBullet,
     }
 }
 
