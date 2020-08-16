@@ -49,6 +49,7 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject,collisionLis
 export const CreatePlayerObject = (x,y, renderComponent, frameIndex, CreateBullet) =>
 {
     let object = CreateGameObject(
+        'Player',
         x,y,0,
         0,5,0,
         renderComponent, frameIndex,

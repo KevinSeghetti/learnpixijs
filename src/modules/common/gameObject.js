@@ -21,10 +21,10 @@ export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisi
 
 //===============================================================================
 
-export const CreateTimedObject = (x,y,xDelta,yDelta, renderComponent, frameIndex, duration) =>
+export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, frameIndex, duration) =>
 {
     let object = CreateGameObject(
-        x,y,0,
+        type,x,y,0,
         xDelta,yDelta,0,
         renderComponent,frameIndex
     )
@@ -41,14 +41,15 @@ export const CreateTimedObject = (x,y,xDelta,yDelta, renderComponent, frameIndex
 
 //===============================================================================
 
-export const CreateGameObject = (x,y,rotation,vx,vy,rv, renderComponent, frameIndex) =>
+export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex,collides=true) =>
 {
     //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
     return {
+        type,
         position:
         {
-            x: x,
-            y: y,
+            x,
+            y,
             r: rotation,
         },
         velocity:
@@ -57,13 +58,17 @@ export const CreateGameObject = (x,y,rotation,vx,vy,rv, renderComponent, frameIn
             y: vy,
             r: rv,
         },
+        collision:
+        {
+            collides, // if 0, then we don't collide with this at all
+        },
         animation:
         {
-            frameIndex: frameIndex,
+            frameIndex,
             animationSpeed: 2,
         },
         tick: GameObjectTick,
-        renderComponent: renderComponent,
+        renderComponent,
     }
 }
 
@@ -158,11 +163,13 @@ export const GameObjectTick = (object,delta,clipping,keys,AddGameObject,collisio
 {
     //console.log("GameObjectTick",object,delta,clipping)
 
-    let position = MoveObject(object,delta,clipping)
+    let localClipping = object.clipping?object.clipping:clipping
+
+    let position = MoveObject(object,delta,localClipping)
     return {
      ...object,
      position : position,
-     velocity : UpdateObjectSpeed(position,object.velocity,delta,clipping),
+     velocity : UpdateObjectSpeed(position,object.velocity,delta,localClipping),
      animation: AnimateObject(object,delta),
     }
 }

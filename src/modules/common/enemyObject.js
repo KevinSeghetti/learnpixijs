@@ -24,6 +24,7 @@ export const EnemyObjectTick = (object,delta,clipping,keys,AddGameObject,collisi
 export const CreateEnemyObject = (x,y,xDelta,yDelta, renderComponent, frameIndex,ExplosionFactory) =>
 {
     let object = CreateFallingObject(
+        'Enemy',
         x,y,
         xDelta,yDelta,
         renderComponent,frameIndex

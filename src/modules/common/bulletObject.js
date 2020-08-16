@@ -19,6 +19,7 @@ export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collis
 export const CreateBulletObject = (x,y,xDelta,yDelta, renderComponent, frameIndex) =>
 {
     let object = CreateFallingObject(
+        'Bullet',
         x,y,
         xDelta,yDelta,
         renderComponent,frameIndex

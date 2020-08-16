@@ -59,6 +59,7 @@ const CreateGameObjects = () =>
     {
         objects.push(
             CreateGameObject(
+                "bounce",
                 generatorTypes.stageOptions.width*Math.random(),generatorTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
                 BunnyComponent, Math.round(4*Math.random()))
@@ -69,7 +70,7 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,0,PixelsPerSecond(500),
+            "Generated",x,y,0,PixelsPerSecond(500),
             BunnyComponent,2,
         )
     }

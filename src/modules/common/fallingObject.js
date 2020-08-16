@@ -24,9 +24,10 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,colli
 
 //===============================================================================
 
-export const CreateFallingObject = (x,y,xDelta,yDelta, renderComponent, frameIndex) =>
+export const CreateFallingObject = (type="Falling",x,y,xDelta,yDelta, renderComponent, frameIndex) =>
 {
     let object = CreateGameObject(
+        type,
         x,y,0,
         xDelta,yDelta,0,
         renderComponent,frameIndex

@@ -36,16 +36,31 @@ export const GameTick = (gameObjects,delta,keys,clipping) =>
 
     gameObjects.forEach( (entry,index) =>
     {
-        // inner loop. Go over every object comparing to this one
-        gameObjects.forEach( (innerEntry,innerIndex) =>
-            {
-                collisionList.push([])
-                if(index !== innerIndex && CheckCollision(entry,innerEntry))
+        let collides = true
+        if(entry.collision)
+        {
+            collides = entry.collision.collides
+        }
+
+        if(collides)
+        {
+            // inner loop. Go over every object comparing to this one
+            gameObjects.forEach( (innerEntry,innerIndex) =>
                 {
-                    collisionList[index].push(innerEntry)       // trust javascript to make these references
+                    collisionList.push([])
+
+                    let innerCollides = true
+                    if(innerEntry.collision)
+                    {
+                        innerCollides = innerEntry.collision.collides
+                    }
+                    if(index !== innerIndex && CheckCollision(entry,innerEntry) && innerCollides)
+                    {
+                        collisionList[index].push(innerEntry)       // trust javascript to make these references
+                    }
                 }
-            }
-        )
+            )
+        }
     }
     )
 
