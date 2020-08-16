@@ -23,7 +23,7 @@ const InnerObjects = (props) =>
 
         if(entry.renderComponent)
         {
-            return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
+            return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
         }
         return null
     }

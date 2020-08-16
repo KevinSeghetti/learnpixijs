@@ -1,7 +1,6 @@
 // modules/common/gameObject.js
 //===============================================================================
 
-
 //===============================================================================
 // timed object deletes itself after a given duration
 
@@ -58,8 +57,12 @@ export const CreateGameObject = (x,y,rotation,vx,vy,rv, renderComponent, frameIn
             y: vy,
             r: rv,
         },
+        animation:
+        {
+            frameIndex: frameIndex,
+            animationSpeed: 2,
+        },
         tick: GameObjectTick,
-        frameIndex: frameIndex,
         renderComponent: renderComponent,
     }
 }
@@ -104,6 +107,30 @@ export const MoveObject = (object, delta,clipping) =>
 
 //===============================================================================
 
+export const AnimateObject = (object, delta) =>
+{
+    //console.log("AnimateObject",object,delta)
+    let frameIndex = object.animation.frameIndex
+
+    if(object.renderComponent)
+    {
+        frameIndex = object.animation.frameIndex+1
+        if(frameIndex >= object.renderComponent.gameData.frames)
+        {
+            frameIndex = 0
+        }
+    }
+
+    return (
+      {
+          ...object.animation,
+          frameIndex: frameIndex,
+      }
+  )
+}
+
+//===============================================================================
+
 export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
 {
     let xSpeed = velocity.x
@@ -135,7 +162,8 @@ export const GameObjectTick = (object,delta,clipping,keys,AddGameObject,collisio
     return {
      ...object,
      position : position,
-     velocity : UpdateObjectSpeed(position,object.velocity,delta,clipping)
+     velocity : UpdateObjectSpeed(position,object.velocity,delta,clipping),
+     animation: AnimateObject(object,delta),
     }
 }
 

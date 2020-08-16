@@ -28,9 +28,9 @@ const InnerObjects = (props) =>
 
     let objectList = props.generator.gameObjects.map( (entry,index) =>
     {
-        if(entry.frameIndex >= 0)
+        if(entry.animation.frameIndex >= 0)
         {
-            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
+            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
         }
         return null
     }
