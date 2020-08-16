@@ -58,7 +58,7 @@ export const GameTick = (gameObjects,delta,keys,clipping) =>
         //console.log("AddGameObject",object)
         newGameObjects.push(object)
     }
-    let resultingGameObjects = gameObjects.map( (entry,index) => entry.tick(entry,delta,clipping,keys,AddGameObject,collisionList) )
+    let resultingGameObjects = gameObjects.map( (entry,index) => entry.tick(entry,delta,clipping,keys,AddGameObject,collisionList[index]) )
     .filter(x => x)
 
     return [...resultingGameObjects, ...newGameObjects ]

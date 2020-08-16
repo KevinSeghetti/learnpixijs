@@ -3,7 +3,7 @@
 import { types as shooterTypes } from 'modules/shooter/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/player'
-import { CreateGameObject, CreateFallingObject, CreateBulletObject, CreateTimedObject } from 'modules/common/gameObject'
+import { CreateGameObject, CreateFallingObject, CreateBulletObject, CreateEnemyObject, CreateTimedObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
 import {PlayerComponent, BulletComponent, EnemyComponent, ExplosionComponent } from "containers/shooter/Assets";
 
@@ -62,24 +62,8 @@ const CreateGameObjects = () =>
             )
     }
 
-    const CreateGeneratedObject = (x,y) =>
-    {
-        //console.log("CreateGeneratedObject:",x,y)
-        return CreateFallingObject(
-            x,y,0,5,
-           EnemyComponent, 0,
-        )
-    }
 
-    const CreateBulletObject = (x,y) =>
-    {
-        return CreateFallingObject(
-            x,y,0,-5,
-            BulletComponent, 0,
-        )
-    }
-
-    const CreateExplosionObject = (x,y) =>
+    const ExplosionObjectFactory = (x,y) =>
     {
         return CreateTimedObject(
             x,y,0,0,
@@ -88,9 +72,28 @@ const CreateGameObjects = () =>
         )
     }
 
+
+    const GeneratedObjectFactory = (x,y) =>
+    {
+        //console.log("GeneratedObjectFactory:",x,y)
+        return CreateEnemyObject(
+            x,y,0,5,
+           EnemyComponent, 0,
+           ExplosionObjectFactory,
+        )
+    }
+
+    const BulletObjectFactory = (x,y) =>
+    {
+        return CreateBulletObject(
+            x,y,0,-5,
+            BulletComponent, 0,
+        )
+    }
+
     const generationRate = 5
-    objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
-    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, 0,CreateBulletObject))
+    objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,GeneratedObjectFactory))
+    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, 0,BulletObjectFactory))
     return objects
 }
 
