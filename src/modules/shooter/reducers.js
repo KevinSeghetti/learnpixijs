@@ -2,8 +2,10 @@
 
 import { types as shooterTypes } from 'modules/shooter/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
-import { CreatePlayerObject } from 'modules/common/player'
-import { CreateGameObject, CreateFallingObject, CreateBulletObject, CreateEnemyObject, CreateTimedObject } from 'modules/common/gameObject'
+import { CreatePlayerObject } from 'modules/common/playerObject'
+import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
+import { CreateEnemyObject } from 'modules/common/enemyObject'
+import { CreateBulletObject } from 'modules/common/bulletObject'
 import { GameTick } from 'modules/common/tick'
 import {PlayerComponent, BulletComponent, EnemyComponent, ExplosionComponent } from "containers/shooter/Assets";
 
@@ -62,7 +64,6 @@ const CreateGameObjects = () =>
             )
     }
 
-
     const ExplosionObjectFactory = (x,y) =>
     {
         return CreateTimedObject(
@@ -71,7 +72,6 @@ const CreateGameObjects = () =>
             120 // last about 2 seconds
         )
     }
-
 
     const GeneratedObjectFactory = (x,y) =>
     {
