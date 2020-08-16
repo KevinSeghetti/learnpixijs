@@ -1,7 +1,6 @@
 import React,{useEffect,useState} from "react";
 import PropTypes from 'prop-types'
 import { withApp, Container, Stage } from "react-pixi-fiber";
-import Bunny from "components/Bunny";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -80,9 +79,9 @@ const InnerObjects = (props) =>
 
     let objectList = props.shooter.gameObjects.map( (entry,index) =>
     {
-        if(entry.frameIndex >= 0)
+        if(entry.renderComponent)
         {
-            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
+            return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.frameIndex} rotation={entry.position.r} />
         }
         return null
     }

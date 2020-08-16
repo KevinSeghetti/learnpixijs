@@ -5,6 +5,7 @@ import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/player'
 import { CreateGameObject, CreateFallingObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
+import {PlayerComponent, BulletComponent, EnemyComponent} from "containers/shooter/Assets";
 
 import CreateLogger from 'components/loggingConfig'
 
@@ -104,7 +105,7 @@ const CreateGameObjects = () =>
             CreateGameObject(
                 shooterTypes.stageOptions.width*Math.random(),shooterTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
-                Math.round(4*Math.random()))
+                EnemyComponent,Math.round(4*Math.random()))
             )
     }
 
@@ -112,7 +113,8 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,0,5,2,
+            x,y,0,5,
+           EnemyComponent, 2,
         )
     }
 
@@ -120,13 +122,14 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,0,-5,2,
+            x,y,0,-5,
+            BulletComponent, 4,
         )
     }
 
     const generationRate = 5
     objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
-    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, 3,CreateBulletObject))
+    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, 3,CreateBulletObject))
     return objects
 }
 

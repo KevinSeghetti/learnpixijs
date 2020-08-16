@@ -4,6 +4,7 @@ import { types as generatorTypes } from 'modules/generator/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreateGameObject, CreateFallingObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
+import {BunnyComponent} from "containers/generator/Assets";
 
 import CreateLogger from 'components/loggingConfig'
 
@@ -103,7 +104,7 @@ const CreateGameObjects = () =>
             CreateGameObject(
                 generatorTypes.stageOptions.width*Math.random(),generatorTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
-                Math.round(4*Math.random()))
+                BunnyComponent, Math.round(4*Math.random()))
             )
     }
 
@@ -111,7 +112,8 @@ const CreateGameObjects = () =>
     {
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
-            x,y,0,5,2,
+            x,y,0,5,
+            BunnyComponent,2,
         )
     }
     const generationRate = 5

@@ -3,6 +3,7 @@
 import { types as firstTypes } from 'modules/first/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
+import {BunnyComponent} from "containers/first/Assets";
 
 import CreateLogger from 'components/loggingConfig'
 
@@ -55,7 +56,7 @@ const CreateGameObjects = () =>
             CreateGameObject(
                 firstTypes.stageOptions.width*Math.random(),firstTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
-                Math.round(4*Math.random()))
+                BunnyComponent, Math.round(4*Math.random()))
             )
     }
     return objects

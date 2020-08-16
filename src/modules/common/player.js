@@ -6,22 +6,12 @@ import { CreateGameObject } from 'modules/common/gameObject'
 
 export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 {
-    //object.wallClock
     //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject)
     //console.log("PlayerTick:keys",keys)
-//    let lastGenerated = object.lastGenerated
-//  if(object.wallClock > object.lastGenerated+object.rate)
-//  {
-//      lastGenerated += object.rate
-//      let x = object.position.x + (object.size.x*Math.random())
-//      let y = object.position.y + (object.size.y*Math.random())
-//      //console.log("calling add game object")
-//      AddGameObject(object.generateObject(x,y))
-//  }
-
 
     const playerSpeed = 2
     let xDelta = 0
+    let lastGenerated = object.lastGenerated
 
     if(keys.arrowLeft &&  object.position.x > clipping.min.x)
     {
@@ -35,25 +25,32 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 
     let newX = object.position.x + xDelta
 
-    if(keys.space)
+    if(keys.space && object.wallClock > object.lastGenerated+object.fireRate)
     {
         AddGameObject(object.createBullet(object.position.x,object.position.y) )
+        lastGenerated = object.wallClock
+    }
+    else
+    {
+        //lastGenerated = object.wallCLock - object.fireRate
     }
 
     return {
         ...object,
-        position: {...object.position, x:newX }
+        position: {...object.position, x:newX },
+        wallClock: object.wallClock + delta,
+        lastGenerated: lastGenerated,
     }
 }
 
 //===============================================================================
 
-export const CreatePlayerObject = (x,y,frameIndex,CreateBullet) =>
+export const CreatePlayerObject = (x,y, renderComponent, frameIndex, CreateBullet) =>
 {
     let object = CreateGameObject(
         x,y,0,
         0,5,0,
-        frameIndex
+        renderComponent, frameIndex,
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort
@@ -63,6 +60,8 @@ export const CreatePlayerObject = (x,y,frameIndex,CreateBullet) =>
         ...object,
         lastGenerated: 0,
         createBullet: CreateBullet,
+        fireRate: 10,
+        wallClock: 0,
     }
 }
 

@@ -23,12 +23,12 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
 
 //===============================================================================
 
-export const CreateFallingObject = (x,y,xDelta,yDelta,frameIndex) =>
+export const CreateFallingObject = (x,y,xDelta,yDelta, renderComponent, frameIndex) =>
 {
     let object = CreateGameObject(
         x,y,0,
         xDelta,yDelta,0,
-        frameIndex
+        renderComponent,frameIndex
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort
@@ -40,7 +40,7 @@ export const CreateFallingObject = (x,y,xDelta,yDelta,frameIndex) =>
 
 //===============================================================================
 
-export const CreateGameObject = (x,y,rotation,vx,vy,rv, frameIndex) =>
+export const CreateGameObject = (x,y,rotation,vx,vy,rv, renderComponent, frameIndex) =>
 {
     //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
     return {
@@ -58,6 +58,7 @@ export const CreateGameObject = (x,y,rotation,vx,vy,rv, frameIndex) =>
         },
         tick: GameObjectTick,
         frameIndex: frameIndex,
+        renderComponent: renderComponent,
     }
 }
 
