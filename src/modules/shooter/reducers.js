@@ -1,13 +1,14 @@
-// modules/generator/reducers
+// modules/shooter/reducers
 
-import { types as generatorTypes } from 'modules/generator/index'
+import { types as shooterTypes } from 'modules/shooter/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
+import { CreatePlayerObject } from 'modules/common/player'
 import { CreateGameObject, CreateFallingObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("generator")
+let log = CreateLogger("shooter")
 
 //===============================================================================
 
@@ -20,8 +21,8 @@ const clipping =
     },
     max:
     {
-        x: generatorTypes.stageOptions.width,
-        y: generatorTypes.stageOptions.height,
+        x: shooterTypes.stageOptions.width,
+        y: shooterTypes.stageOptions.height,
     }
 }
 
@@ -29,8 +30,8 @@ const clipping =
 // Action Handlers
 // ------------------------------------
 
-const GENERATOR_ACTION_HANDLERS = {
-  [generatorTypes.TICK                  ]       : (state, action) =>
+const SHOOTER_ACTION_HANDLERS = {
+  [shooterTypes.TICK                  ]       : (state, action) =>
   {
       return {
           ...state,
@@ -38,7 +39,7 @@ const GENERATOR_ACTION_HANDLERS = {
       }
   },
 
-  [generatorTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
+  [shooterTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -49,7 +50,7 @@ const GENERATOR_ACTION_HANDLERS = {
           },
       }
   },
-  [generatorTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
+  [shooterTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -61,7 +62,7 @@ const GENERATOR_ACTION_HANDLERS = {
       }
   },
 
-  [generatorTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
+  [shooterTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
   {
       return {
           ...state,
@@ -72,7 +73,7 @@ const GENERATOR_ACTION_HANDLERS = {
           },
       }
   },
-  [generatorTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
+  [shooterTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
   {
       return {
           ...state,
@@ -101,7 +102,7 @@ const CreateGameObjects = () =>
     {
         objects.push(
             CreateGameObject(
-                generatorTypes.stageOptions.width*Math.random(),generatorTypes.stageOptions.height*Math.random(),0,
+                shooterTypes.stageOptions.width*Math.random(),shooterTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
                 Math.round(4*Math.random()))
             )
@@ -115,12 +116,14 @@ const CreateGameObjects = () =>
         )
     }
     const generationRate = 5
-    objects.push(CreateGeneratorObject(0,0,generatorTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
+    objects.push(CreateGeneratorObject(0,0,shooterTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
+    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, 3))
     return objects
 }
 
+//===============================================================================
 
-const generatorInitialState = {
+const shooterInitialState = {
   player:
   {
       position:
@@ -132,10 +135,10 @@ const generatorInitialState = {
   gameObjects: CreateGameObjects()
 }
 
-export default function reducer(state = generatorInitialState, action) {
-  log.trace(  'generatorReducer(', state, ', ',action,')')
-  //console.log(  'generatorReducer', state ,action)
-    const handler = GENERATOR_ACTION_HANDLERS[action.type]
+export default function reducer(state = shooterInitialState, action) {
+  log.trace(  'shooterReducer(', state, ', ',action,')')
+  //console.log(  'shooterReducer', state ,action)
+    const handler = SHOOTER_ACTION_HANDLERS[action.type]
     return handler ? handler(state, action) : state
 }
 

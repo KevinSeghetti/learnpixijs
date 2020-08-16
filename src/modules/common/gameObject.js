@@ -3,21 +3,17 @@
 
 // falling object deletes itself when it reaches the bottom of the screen
 
-export const FallingObjectTick = (object,delta,clipping,AddGameObject) =>
+export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
 {
     //console.log("FallingObjectTick",object,delta,clipping)
 
-    // will eventually want a taller clipping windor for this
     if(object.position.y === clipping.max.y)
     {   // at the bottom of the screen, time to delete
         return null
     }
-    let position = MoveObject(object,delta,clipping)
-    return {
-     ...object,
-     position : position,
-     velocity : UpdateObjectSpeed(position,object.velocity,delta,clipping)
-    }
+
+    return object.baseTick(object,delta,clipping,keys,AddGameObject)
+    // will eventually want a taller clipping window for this
 }
 
 //===============================================================================
@@ -123,7 +119,7 @@ export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
 
 //===============================================================================
 
-export const GameObjectTick = (object,delta,clipping,AddGameObject) =>
+export const GameObjectTick = (object,delta,clipping,keys,AddGameObject) =>
 {
     //console.log("GameObjectTick",object,delta,clipping)
 

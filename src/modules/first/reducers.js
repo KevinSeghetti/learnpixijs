@@ -34,7 +34,7 @@ const FIRST_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: GameTick(state.gameObjects,action.delta,clipping)
+          gameObjects: GameTick(state.gameObjects,action.delta,action.keys,clipping)
       }
   },
 }
