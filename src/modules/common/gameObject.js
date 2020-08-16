@@ -39,6 +39,43 @@ export const CreateFallingObject = (x,y,xDelta,yDelta, renderComponent, frameInd
 }
 
 //===============================================================================
+// timed object deletes itself after a given duration
+
+export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject) =>
+{
+    //console.log("TimedObjectTick",object,delta,clipping)
+
+    if(object.wallClock > object.duration)
+    {   // time to delete oneself
+        return null
+    }
+
+    return {
+        ...object.baseTick(object,delta,clipping,keys,AddGameObject),
+        wallClock: object.wallClock+delta
+    }
+}
+
+//===============================================================================
+
+export const CreateTimedObject = (x,y,xDelta,yDelta, renderComponent, frameIndex, duration) =>
+{
+    let object = CreateGameObject(
+        x,y,0,
+        xDelta,yDelta,0,
+        renderComponent,frameIndex
+    )
+
+    object.baseTick = object.tick       // kts experiment with manual inheritance
+                                        // if we go this way, this needs to become a linked list of some sort
+
+    object.tick = TimedObjectTick
+    object.duration = duration
+    return object
+
+}
+
+//===============================================================================
 
 export const CreateGameObject = (x,y,rotation,vx,vy,rv, renderComponent, frameIndex) =>
 {

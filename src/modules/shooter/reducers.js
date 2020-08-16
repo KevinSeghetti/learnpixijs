@@ -3,9 +3,9 @@
 import { types as shooterTypes } from 'modules/shooter/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/player'
-import { CreateGameObject, CreateFallingObject } from 'modules/common/gameObject'
+import { CreateGameObject, CreateFallingObject, CreateTimedObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
-import {PlayerComponent, BulletComponent, EnemyComponent} from "containers/shooter/Assets";
+import {PlayerComponent, BulletComponent, EnemyComponent, ExplosionComponent } from "containers/shooter/Assets";
 
 import CreateLogger from 'components/loggingConfig'
 
@@ -120,10 +120,18 @@ const CreateGameObjects = () =>
 
     const CreateBulletObject = (x,y) =>
     {
-        //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
             x,y,0,-5,
             BulletComponent, 0,
+        )
+    }
+
+    const CreateExplosionObject = (x,y) =>
+    {
+        return CreateTimedObject(
+            x,y,0,0,
+            ExplosionComponent, 0,
+            120 // last about 2 seconds
         )
     }
 
