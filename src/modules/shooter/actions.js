@@ -20,33 +20,5 @@ export function shooterActionsTick(delta,keys) {
   }
 }
 
-export function shooterActionsMovePlayerUp(delta) {
-  return {
-    type    : shooterActionsTypes.MOVE_PLAYER_UP,
-    payload : delta
-  }
-}
-
-export function shooterActionsMovePlayerDown(delta) {
-  return {
-    type    : shooterActionsTypes.MOVE_PLAYER_DOWN,
-    payload : delta
-  }
-}
-
-export function shooterActionsMovePlayerLeft(delta) {
-  return {
-    type    : shooterActionsTypes.MOVE_PLAYER_LEFT,
-    payload : delta
-  }
-}
-
-export function shooterActionsMovePlayerRight(delta) {
-  return {
-    type    : shooterActionsTypes.MOVE_PLAYER_RIGHT,
-    payload : delta
-  }
-}
-
 
 

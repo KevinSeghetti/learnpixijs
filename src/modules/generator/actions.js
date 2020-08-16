@@ -17,33 +17,6 @@ export function generatorActionsTick(delta) {
   }
 }
 
-export function generatorActionsMovePlayerUp(delta) {
-  return {
-    type    : generatorActionsTypes.MOVE_PLAYER_UP,
-    payload : delta
-  }
-}
-
-export function generatorActionsMovePlayerDown(delta) {
-  return {
-    type    : generatorActionsTypes.MOVE_PLAYER_DOWN,
-    payload : delta
-  }
-}
-
-export function generatorActionsMovePlayerLeft(delta) {
-  return {
-    type    : generatorActionsTypes.MOVE_PLAYER_LEFT,
-    payload : delta
-  }
-}
-
-export function generatorActionsMovePlayerRight(delta) {
-  return {
-    type    : generatorActionsTypes.MOVE_PLAYER_RIGHT,
-    payload : delta
-  }
-}
 
 
 

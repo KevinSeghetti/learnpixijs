@@ -40,51 +40,6 @@ const SHOOTER_ACTION_HANDLERS = {
       }
   },
 
-  [shooterTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              x: state.playerPosition.x-action.payload
-          },
-      }
-  },
-  [shooterTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              x: state.playerPosition.x+action.payload
-          },
-      }
-  },
-
-  [shooterTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              y: state.playerPosition.y-action.payload
-          },
-      }
-  },
-  [shooterTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              y: state.playerPosition.y+action.payload
-          },
-      }
-  },
 
 }
 

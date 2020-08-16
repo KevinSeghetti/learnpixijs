@@ -39,52 +39,6 @@ const GENERATOR_ACTION_HANDLERS = {
       }
   },
 
-  [generatorTypes.MOVE_PLAYER_LEFT                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              x: state.playerPosition.x-action.payload
-          },
-      }
-  },
-  [generatorTypes.MOVE_PLAYER_RIGHT                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              x: state.playerPosition.x+action.payload
-          },
-      }
-  },
-
-  [generatorTypes.MOVE_PLAYER_UP                   ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              y: state.playerPosition.y-action.payload
-          },
-      }
-  },
-  [generatorTypes.MOVE_PLAYER_DOWN                 ]       : (state, action) =>
-  {
-      return {
-          ...state,
-          playerPosition:
-          {
-              ...state.playerPosition,
-              y: state.playerPosition.y+action.payload
-          },
-      }
-  },
-
 }
 
 // ------------------------------------
