@@ -5,12 +5,20 @@ import { Sprite } from "react-pixi-fiber";
 import * as PIXI from "pixi.js";
 import image from "./image.png";
 
-const centerAnchor = new PIXI.Point(0.5, 0.5);
+//-------------------------------------------------------------------------------
+
+const width = 31
+const height = 28
+const frames = 1
 
 const imageTextures = new PIXI.Texture.from(image);
 const textures = [
-  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(0, 0, 31, 28)),
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(0, 0, width,height)),
 ];
+
+//-------------------------------------------------------------------------------
+
+const centerAnchor = new PIXI.Point(0.5, 0.5);
 
 function Image(props) {
   const texture = textures[props.texture];
@@ -25,5 +33,10 @@ Image.defaultProps = {
   as: Sprite,
   texture: 0,
 };
+
+Image.gameData = {
+    size : { x:width,y:height},
+    frames,
+}
 
 export default Image;

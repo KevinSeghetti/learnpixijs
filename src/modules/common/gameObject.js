@@ -3,7 +3,7 @@
 
 // falling object deletes itself when it reaches the bottom of the screen
 
-export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
+export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
 {
     //console.log("FallingObjectTick",object,delta,clipping)
 
@@ -17,7 +17,7 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject) =>
         return null
     }
 
-    return object.baseTick(object,delta,clipping,keys,AddGameObject)
+    return object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList)
     // will eventually want a taller clipping window for this
 }
 
@@ -38,10 +38,43 @@ export const CreateFallingObject = (x,y,xDelta,yDelta, renderComponent, frameInd
 
 }
 
+
+//===============================================================================
+
+export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+{
+    console.log("BulletObjectTick",object,delta,clipping,keys,AddGameObject,collisionList)
+
+    if(collisionList.length)
+       // collided with anything
+    {   // at any edge of screen, time to delete
+        return null
+    }
+
+    return object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList)
+    // will eventually want a taller clipping window for this
+}
+
+//===============================================================================
+
+export const CreateBulletObject = (x,y,xDelta,yDelta, renderComponent, frameIndex) =>
+{
+    let object = CreateFallingObject(
+        x,y,0,
+        xDelta,yDelta,0,
+        renderComponent,frameIndex
+    )
+    object.baseTick = object.tick       // kts experiment with manual inheritance
+                                        // if we go this way, this needs to become a linked list of some sort
+
+    object.tick = BulletObjectTick
+    return object
+}
+
 //===============================================================================
 // timed object deletes itself after a given duration
 
-export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject) =>
+export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
 {
     //console.log("TimedObjectTick",object,delta,clipping)
 
@@ -51,7 +84,7 @@ export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject) =>
     }
 
     return {
-        ...object.baseTick(object,delta,clipping,keys,AddGameObject),
+        ...object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList),
         wallClock: object.wallClock+delta
     }
 }
@@ -162,7 +195,7 @@ export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
 
 //===============================================================================
 
-export const GameObjectTick = (object,delta,clipping,keys,AddGameObject) =>
+export const GameObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
 {
     //console.log("GameObjectTick",object,delta,clipping)
 

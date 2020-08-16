@@ -4,9 +4,9 @@ import { CreateGameObject } from 'modules/common/gameObject'
 
 //===============================================================================
 
-export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
+export const PlayerTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
 {
-    //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject)
+    //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject,collisionList)
     //console.log("PlayerTick:keys",keys)
 
     const playerSpeed = 2

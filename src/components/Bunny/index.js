@@ -1,32 +1,47 @@
+// bunny
 import React from "react";
 import PropTypes from "prop-types";
 import { Sprite } from "react-pixi-fiber";
 import * as PIXI from "pixi.js";
-import bunnys from "./bunnys.png";
+import image from "./bunnys.png";
+
+
+//-------------------------------------------------------------------------------
+
+const width = 26
+const height = 37
+const frames = 5
+
+const imageTextures = new PIXI.Texture.from(image);
+const textures = [
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(2,  47, width, height)),
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(2,  86, width, height)),
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(2, 125, width, height)),
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(2, 164, width, height)),
+  new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(2,   2, width, height)),
+];
+
+//-------------------------------------------------------------------------------
 
 const centerAnchor = new PIXI.Point(0.5, 0.5);
 
-const bunnyTextures = new PIXI.Texture.from(bunnys);
-const textures = [
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 47, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 86, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 125, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 164, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 2, 26, 37)),
-];
-
-function Bunny(props) {
+function Image(props) {
   const texture = textures[props.texture];
   const Component = props.as;
   return <Component anchor={centerAnchor} {...props} texture={texture} />;
 }
-Bunny.propTypes = {
+Image.propTypes = {
   as: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
   texture: PropTypes.number,
 };
-Bunny.defaultProps = {
+Image.defaultProps = {
   as: Sprite,
   texture: 0,
 };
 
-export default Bunny;
+Image.gameData = {
+    size : { x:width,y:height},
+    frames,
+}
+
+export default Image;

@@ -3,7 +3,7 @@
 import { types as shooterTypes } from 'modules/shooter/index'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/player'
-import { CreateGameObject, CreateFallingObject, CreateTimedObject } from 'modules/common/gameObject'
+import { CreateGameObject, CreateFallingObject, CreateBulletObject, CreateTimedObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
 import {PlayerComponent, BulletComponent, EnemyComponent, ExplosionComponent } from "containers/shooter/Assets";
 
@@ -39,8 +39,6 @@ const SHOOTER_ACTION_HANDLERS = {
           gameObjects: GameTick(state.gameObjects,action.delta,action.keys,clipping)
       }
   },
-
-
 }
 
 // ------------------------------------

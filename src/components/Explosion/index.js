@@ -5,11 +5,13 @@ import { Sprite } from "react-pixi-fiber";
 import * as PIXI from "pixi.js";
 import image from "./image.png";
 
-const centerAnchor = new PIXI.Point(0.5, 0.5);
+//-------------------------------------------------------------------------------
+
+const width = 26
+const height = 28
+const frames = 15
 
 const imageTextures = new PIXI.Texture.from(image);
-let width = 26
-let height = 28
 
 // kts TODO: turn this into an object which encodes number of frames in animation, and supports multiple animations
 
@@ -32,6 +34,10 @@ const textures = [
     new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(width*4, height*2, width, height)),
 ];
 
+//-------------------------------------------------------------------------------
+
+const centerAnchor = new PIXI.Point(0.5, 0.5);
+
 function Image(props) {
   const texture = textures[props.texture];
   const Component = props.as;
@@ -45,5 +51,10 @@ Image.defaultProps = {
   as: Sprite,
   texture: 0,
 };
+
+Image.gameData = {
+    size : { x:width,y:height},
+    frames,
+}
 
 export default Image;
