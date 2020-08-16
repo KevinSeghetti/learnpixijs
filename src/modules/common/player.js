@@ -27,7 +27,7 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject) =>
 
     if(keys.space && object.wallClock > object.lastGenerated+object.fireRate)
     {
-        AddGameObject(object.createBullet(object.position.x,object.position.y) )
+        AddGameObject(object.createBullet(object.position.x,object.position.y-40) )
         lastGenerated = object.wallClock
     }
     else
