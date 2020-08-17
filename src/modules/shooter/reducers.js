@@ -7,6 +7,7 @@ import { CreatePlayerObject } from 'modules/common/playerObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
 import { CreateScoreObject } from 'modules/common/scoreObject'
+import { CreatePlayerStatsObject } from 'modules/common/playerStatsObject'
 import { CreateBulletObject } from 'modules/common/bulletObject'
 import { GameTick } from 'modules/common/tick'
 import {
@@ -98,7 +99,16 @@ const CreateGameObjects = () =>
     // score object
     objects.push(CreateScoreObject(
             'Score',
-            20,40,
+            50,20,
+            0,0,
+            TextComponent,
+        )
+    )
+
+    // player stats object
+    objects.push(CreatePlayerStatsObject(
+            'PlayerStats',
+            shooterTypes.stageOptions.width-150,20,
             0,0,
             TextComponent,
         )
@@ -151,10 +161,30 @@ const CreateGameObjects = () =>
 
 //===============================================================================
 
+const GameStates =
+{
+    INVALID: 0,
+    ATTRACT: 1,
+    PLAYING: 2,
+}
+
+const PlayerStates =
+{
+    INVALID: 0,
+    PLAYING: 1,
+    DYING:   2,          // playing explosion animation
+    DEAD:    3,           // no more lives, so between games
+}
+
+//-------------------------------------------------------------------------------
+
 const shooterInitialState = {
   globals:
   {
       score: 0,
+      lives: 4,
+      gameState: GameStates.PLAYING,
+      playerState: PlayerStates.PLAYING,
   },
   gameObjects: CreateGameObjects()
 }
