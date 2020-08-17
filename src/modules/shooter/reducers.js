@@ -73,13 +73,13 @@ const CreateGameObjects = () =>
 {
     let objects = []
 
-    //objects.push(CreateGameObject('Background',0,0,0,0,0,0,BackgroundComponent,0,false))
     const rotationSpeed = RadiansPerSecond(Math.PI*2)
     const movementSpeed = PixelsPerSecond(400)
 
-    let background = CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false)
-    background.clipping = backgroundClipping
-    objects.push(background)
+    objects.push(
+        {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
+            clipping:backgroundClipping
+        })
 
     const objectCount = 5
     for(let i = 0;i < objectCount; ++i)

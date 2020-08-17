@@ -1,7 +1,7 @@
 // modules/common/player.js
 
 import { CreateGameObject } from 'modules/common/gameObject'
-import { MILLISECONDS, RatePerSecond, PixelsPerSecond } from 'modules/common/time'
+import { RatePerSecond, PixelsPerSecond } from 'modules/common/time'
 
 //===============================================================================
 
