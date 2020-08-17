@@ -24,17 +24,19 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,colli
 
 //===============================================================================
 
-export const CreateFallingObject = (type="Falling",x,y,xDelta,yDelta, renderComponent, frameIndex) =>
+export const CreateFallingObject = (type="Falling",x,y,xDelta,yDelta, renderComponent) =>
 {
     let object = CreateGameObject(
         type,
         x,y,0,
         xDelta,yDelta,0,
-        renderComponent,frameIndex
+        renderComponent
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort
     object.tick = FallingObjectTick
     return object
 }
+
+//===============================================================================
 

@@ -46,13 +46,13 @@ export const PlayerTick = (object,delta,clipping,keys,AddGameObject,collisionLis
 
 //===============================================================================
 
-export const CreatePlayerObject = (x,y, renderComponent, frameIndex, CreateBullet) =>
+export const CreatePlayerObject = (x,y, renderComponent, CreateBullet) =>
 {
     let object = CreateGameObject(
         'Player',
         x,y,0,
         0,5,0,
-        renderComponent, frameIndex,
+        renderComponent
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort

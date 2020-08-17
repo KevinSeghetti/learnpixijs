@@ -7,7 +7,7 @@ import image from "./image.png";
 
 //-------------------------------------------------------------------------------
 
-const width = 26
+const width = 25
 const height = 28
 const frames = 15
 

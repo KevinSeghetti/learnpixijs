@@ -54,12 +54,19 @@ const CreateGameObjects = () =>
     for(let i = 0;i < objectCount; ++i)
     {
         objects.push(
-            CreateGameObject(
-                "first",
-                firstTypes.stageOptions.width*Math.random(),firstTypes.stageOptions.height*Math.random(),0,
-                movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
-                BunnyComponent, Math.round(4*Math.random()))
-            )
+            {
+                ...CreateGameObject(
+                    "first",
+                    firstTypes.stageOptions.width*Math.random(),firstTypes.stageOptions.height*Math.random(),0,
+                    movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
+                    BunnyComponent
+                ),
+                animation: {
+                    frameIndex:Math.round(4*Math.random()),
+                    animationSpeed: 0,
+                }
+            }
+        )
     }
     return objects
 }

@@ -1,7 +1,7 @@
 // modules/generator/reducers
 
 import { types as generatorTypes } from 'modules/generator/index'
-import { PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
+import { RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { CreateFallingObject } from 'modules/common/fallingObject'
@@ -71,10 +71,10 @@ const CreateGameObjects = () =>
         //console.log("CreateGeneratedObject:",x,y)
         return CreateFallingObject(
             "Generated",x,y,0,PixelsPerSecond(500),
-            BunnyComponent,2,
+            BunnyComponent
         )
     }
-    const generationRate = 5
+    const generationRate = RatePerSecond(4)
     objects.push(CreateGeneratorObject(0,2,generatorTypes.stageOptions.width,0,generationRate,CreateGeneratedObject))
     return objects
 }

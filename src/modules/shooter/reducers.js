@@ -1,7 +1,7 @@
 // modules/shooter/reducers
 
 import { types as shooterTypes } from 'modules/shooter/index'
-import { RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
+import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/playerObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
@@ -86,7 +86,7 @@ const CreateGameObjects = () =>
     {   // generate rocks
         objects.push(
             CreateGameObject(
-                'Rocks',
+                'Rock',
                 shooterTypes.stageOptions.width*Math.random(),shooterTypes.stageOptions.height*Math.random(),0,
                 movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
                 RockComponent,0)
@@ -95,11 +95,22 @@ const CreateGameObjects = () =>
 
     const ExplosionObjectFactory = (x,y) =>
     {
-        return CreateTimedObject(
-            'Explosion',
-            x,y,0,0,
-            ExplosionComponent, 0,
-            120 // last about 2 seconds
+        let object = CreateTimedObject(
+                'Explosion',
+                x,y,0,0,
+                ExplosionComponent,
+                Seconds(0.5),
+            )
+
+        return (
+            {
+                ...object,
+                animation:
+                {
+                    ...object.animation,
+                    animationSpeed: RatePerSecond(16)
+                }
+            }
         )
     }
 
@@ -108,7 +119,7 @@ const CreateGameObjects = () =>
         //console.log("GeneratedObjectFactory:",x,y)
         return CreateEnemyObject(
             x,y,0,PixelsPerSecond(500),
-           EnemyComponent, 0,
+           EnemyComponent,
            ExplosionObjectFactory,
         )
     }
@@ -117,13 +128,13 @@ const CreateGameObjects = () =>
     {
         return CreateBulletObject(
             x,y,0,PixelsPerSecond(-500),
-            BulletComponent, 0,
+            BulletComponent
         )
     }
 
     const generationRate = RatePerSecond(4)
     objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,GeneratedObjectFactory))
-    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, 0,BulletObjectFactory))
+    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, BulletObjectFactory))
     return objects
 }
 

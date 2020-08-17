@@ -1,5 +1,6 @@
 // modules/common/gameObject.js
 //===============================================================================
+import { RatePerSecond, } from 'modules/common/time'
 
 //===============================================================================
 // timed object deletes itself after a given duration
@@ -21,12 +22,12 @@ export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisi
 
 //===============================================================================
 
-export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, frameIndex, duration) =>
+export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, duration) =>
 {
     let object = CreateGameObject(
         type,x,y,0,
         xDelta,yDelta,0,
-        renderComponent,frameIndex
+        renderComponent
     )
 
     object.baseTick = object.tick       // kts experiment with manual inheritance
@@ -41,7 +42,7 @@ export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, frame
 
 //===============================================================================
 
-export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex,collides=true) =>
+export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex=0,collides=true) =>
 {
     //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
     return {
@@ -65,7 +66,8 @@ export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,fram
         animation:
         {
             frameIndex,
-            animationSpeed: 2,
+            animationSpeed: RatePerSecond(16),
+            wallClock: 0,
         },
         tick: GameObjectTick,
         renderComponent,
@@ -117,21 +119,23 @@ export const AnimateObject = (object, delta) =>
     //console.log("AnimateObject",object,delta)
     let frameIndex = object.animation.frameIndex
 
+    let animation = {...object.animation}
     if(object.renderComponent)
     {
-        frameIndex = object.animation.frameIndex+1
-        if(frameIndex >= object.renderComponent.gameData.frames)
+        if(object.animation.animationSpeed)
         {
-            frameIndex = 0
+            frameIndex = Math.floor((animation.wallClock/animation.animationSpeed) % object.renderComponent.gameData.frames )
+        }
+
+        animation =
+        {
+            ...animation,
+            frameIndex: frameIndex,
+            wallClock: animation.wallClock+delta
         }
     }
 
-    return (
-      {
-          ...object.animation,
-          frameIndex: frameIndex,
-      }
-  )
+    return ( animation )
 }
 
 //===============================================================================

@@ -19,7 +19,6 @@ const OPTIONS = {
 
 //===============================================================================
 
-
 function useKey(key) {
     // Keep track of key state
     const [pressed, setPressed] = useState(false)
@@ -81,6 +80,10 @@ const InnerObjects = (props) =>
     {
         if(entry.renderComponent)
         {
+            if(entry.animation.frameIndex >= entry.renderComponent.gameData.frames)
+            {
+                console.error(`Shooter: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
+            }
             return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
         }
         return null

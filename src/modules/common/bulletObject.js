@@ -4,9 +4,11 @@ export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collis
 {
     //console.log("BulletObjectTick",object,delta,clipping,keys,AddGameObject,collisionList)
 
-    if(collisionList.length)
-       // collided with anything
-    {   // at any edge of screen, time to delete
+    // list of objects that kill us
+    let localCollisionList = collisionList.filter( entry => [ 'Enemy', 'Rock'].includes(entry.type))
+
+    if(localCollisionList.length)
+    {   // collided with something
         return null
     }
 
@@ -16,13 +18,13 @@ export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collis
 
 //===============================================================================
 
-export const CreateBulletObject = (x,y,xDelta,yDelta, renderComponent, frameIndex) =>
+export const CreateBulletObject = (x,y,xDelta,yDelta, renderComponent) =>
 {
     let object = CreateFallingObject(
         'Bullet',
         x,y,
         xDelta,yDelta,
-        renderComponent,frameIndex
+        renderComponent
     )
     object.fallTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort

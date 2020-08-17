@@ -1,16 +1,12 @@
 // modules/common/generator.js
 //===============================================================================
 
-import { MILLISECONDS } from 'modules/common/time'
-
-//===============================================================================
-
 export const GeneratorObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
 {
     //object.wallClock
     //console.log("GeneratorObjectTick:",object,delta,clipping,keys,AddGameObject,collisionList)
     let lastGenerated = object.lastGenerated
-    if(object.wallClock > object.lastGenerated+(MILLISECONDS/object.rate) )
+    if(object.wallClock > object.lastGenerated+object.rate )
     {
         lastGenerated += object.rate
         let x = object.position.x + (object.size.x*Math.random())
@@ -46,7 +42,6 @@ export const CreateGeneratorObject = (x,y,sizeX,sizeY, rate, GenerateObject) =>
         lastGenerated: 0,
         tick: GeneratorObjectTick,
         generateObject: GenerateObject,
-        frameIndex: -1,
     }
 }
 
