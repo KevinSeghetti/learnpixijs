@@ -24,7 +24,7 @@ const CheckCollision = (first,second) =>
 
 //===============================================================================
 
-export const GameTick = (gameObjects,delta,keys,clipping) =>
+export const GameTick = (state,delta,keys,clipping) =>
 {
     //console.log("GameTick",gameObjects,delta,keys,clipping)
 
@@ -34,7 +34,7 @@ export const GameTick = (gameObjects,delta,keys,clipping) =>
     // collisionList has an entry for each game object, containing an array of other objects that object overlaps with
     let collisionList = []
 
-    gameObjects.forEach( (entry,index) =>
+    state.gameObjects.forEach( (entry,index) =>
     {
         let collides = true
         if(entry.collision)
@@ -45,7 +45,7 @@ export const GameTick = (gameObjects,delta,keys,clipping) =>
         if(collides)
         {
             // inner loop. Go over every object comparing to this one
-            gameObjects.forEach( (innerEntry,innerIndex) =>
+            state.gameObjects.forEach( (innerEntry,innerIndex) =>
                 {
                     collisionList.push([])
 
@@ -73,10 +73,41 @@ export const GameTick = (gameObjects,delta,keys,clipping) =>
         //console.log("AddGameObject",object)
         newGameObjects.push(object)
     }
-    let resultingGameObjects = gameObjects.map( (entry,index) => entry.tick(entry,delta,clipping,keys,AddGameObject,collisionList[index]) )
+
+
+    let newScore = state.globals.score
+
+    const ChangeScore = (delta) =>
+    {
+        newScore += delta
+    }
+
+    let resultingGameObjects = state.gameObjects.map(
+        (entry,index) => entry.tick(
+            entry,
+            delta,
+            clipping,
+            keys,
+            AddGameObject,
+            collisionList[index],
+            state,
+            ChangeScore,
+        )
+    )
     .filter(x => x)
 
-    return [...resultingGameObjects, ...newGameObjects ]
+    return (
+        {
+            ...state,
+            gameObjects: [...resultingGameObjects, ...newGameObjects ],
+            globals:
+            {
+                ...state.globals,
+                score: newScore,
+            },
+
+        }
+    )
 }
 
 //===============================================================================

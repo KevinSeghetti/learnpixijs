@@ -84,7 +84,14 @@ const InnerObjects = (props) =>
             {
                 console.error(`Shooter: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
             }
-            return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
+            return <entry.renderComponent
+                    key={index}
+                    x={entry.position.x}
+                    y={entry.position.y}
+                    texture={entry.animation.frameIndex}
+                    rotation={entry.position.r}
+                    {...entry.renderData}
+            />
         }
         return null
     }

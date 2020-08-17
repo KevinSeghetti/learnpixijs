@@ -1,8 +1,8 @@
 import { CreateFallingObject } from 'modules/common/fallingObject'
 
-export const EnemyObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+export const EnemyObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
 {
-    //console.log("EnemyObjectTick",object,delta,clipping,keys,AddGameObject,collisionList)
+    //console.log("EnemyObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
 
     // list of objects that kill us
     let localCollisionList = collisionList.filter( entry => [ 'Player', 'Rock', 'Bullet'].includes(entry.type))
@@ -16,7 +16,7 @@ export const EnemyObjectTick = (object,delta,clipping,keys,AddGameObject,collisi
         return null     // kill ourselves
     }
 
-    return object.fallTick(object,delta,clipping,keys,AddGameObject,collisionList)
+    return object.fallTick(object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
     // will eventually want a taller clipping window for this
 }
 

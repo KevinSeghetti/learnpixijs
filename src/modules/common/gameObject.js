@@ -5,9 +5,9 @@ import { RatePerSecond, } from 'modules/common/time'
 //===============================================================================
 // timed object deletes itself after a given duration
 
-export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
 {
-    //console.log("TimedObjectTick",object,delta,clipping,keys,AddGameObject,collisionList)
+    //console.log("TimedObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
 
     if(object.wallClock > object.duration)
     {   // time to delete oneself
@@ -15,7 +15,7 @@ export const TimedObjectTick = (object,delta,clipping,keys,AddGameObject,collisi
     }
 
     return {
-        ...object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList),
+        ...object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore),
         wallClock: object.wallClock+delta
     }
 }
@@ -163,9 +163,9 @@ export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
 
 //===============================================================================
 
-export const GameObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+export const GameObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
 {
-    //console.log("GameObjectTick",object,delta,clipping)
+    //console.log("GameObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
 
     let localClipping = object.clipping?object.clipping:clipping
 

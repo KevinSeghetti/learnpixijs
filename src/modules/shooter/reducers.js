@@ -6,6 +6,7 @@ import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject } from 'modules/common/playerObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
+import { CreateScoreObject } from 'modules/common/scoreObject'
 import { CreateBulletObject } from 'modules/common/bulletObject'
 import { GameTick } from 'modules/common/tick'
 import {
@@ -15,6 +16,7 @@ import {
     ExplosionComponent,
     RockComponent,
     BackgroundComponent,
+    TextComponent,
 } from "containers/shooter/Assets";
 
 import CreateLogger from 'components/loggingConfig'
@@ -60,7 +62,7 @@ const SHOOTER_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: GameTick(state.gameObjects,action.delta,action.keys,clipping)
+          ...GameTick(state,action.delta,action.keys,clipping)
       }
   },
 }
@@ -92,6 +94,15 @@ const CreateGameObjects = () =>
                 RockComponent,0)
             )
     }
+
+    // score object
+    objects.push(CreateScoreObject(
+            'Score',
+            20,40,
+            0,0,
+            TextComponent,
+        )
+    )
 
     const ExplosionObjectFactory = (x,y) =>
     {
@@ -141,13 +152,9 @@ const CreateGameObjects = () =>
 //===============================================================================
 
 const shooterInitialState = {
-  player:
+  globals:
   {
-      position:
-      {
-          x: 0,
-          y: 0
-      }
+      score: 0,
   },
   gameObjects: CreateGameObjects()
 }

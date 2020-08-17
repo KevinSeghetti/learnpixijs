@@ -5,9 +5,9 @@ import { RatePerSecond, PixelsPerSecond } from 'modules/common/time'
 
 //===============================================================================
 
-export const PlayerTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+export const PlayerTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
 {
-    //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject,collisionList)
+    //console.log("PlayerObjectTick:",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
     //console.log("PlayerTick:keys",keys)
 
     const playerSpeed = PixelsPerSecond(250)

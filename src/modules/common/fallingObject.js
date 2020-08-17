@@ -4,9 +4,9 @@ import { CreateGameObject } from 'modules/common/gameObject'
 // falling object moves, deletes itself when it reaches any edge of the screen
 
 
-export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList) =>
+export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
 {
-    //console.log("FallingObjectTick",object,delta,clipping)
+    //console.log("FallingObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
 
     if(
        object.position.x === clipping.max.y ||
@@ -18,7 +18,7 @@ export const FallingObjectTick = (object,delta,clipping,keys,AddGameObject,colli
         return null
     }
 
-    return object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList)
+    return object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
     // will eventually want a taller clipping window for this
 }
 
