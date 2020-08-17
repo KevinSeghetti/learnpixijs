@@ -74,7 +74,6 @@ export const GameTick = (state,delta,keys,clipping) =>
         newGameObjects.push(object)
     }
 
-
     let newScore = state.globals.score
 
     const ChangeScore = (delta) =>

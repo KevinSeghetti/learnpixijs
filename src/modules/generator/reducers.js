@@ -37,7 +37,7 @@ const GENERATOR_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: GameTick(state.gameObjects,action.delta,action.keys,clipping)
+          ...GameTick(state,action.delta,action.keys,clipping)
       }
   },
 
@@ -69,9 +69,18 @@ const CreateGameObjects = () =>
     const CreateGeneratedObject = (x,y) =>
     {
         //console.log("CreateGeneratedObject:",x,y)
-        return CreateFallingObject(
-            "Generated",x,y,0,PixelsPerSecond(500),
-            BunnyComponent
+        return (
+            {
+                ...CreateFallingObject(
+                    "Generated",x,y,0,PixelsPerSecond(500),
+                    BunnyComponent
+                ),
+                animation:
+                {
+                    frameIndex:Math.round(4*Math.random()),
+                    animationSpeed: 0,
+                }
+            }
         )
     }
     const generationRate = RatePerSecond(4)
@@ -81,15 +90,11 @@ const CreateGameObjects = () =>
 
 
 const generatorInitialState = {
-  player:
-  {
-      position:
-      {
-          x: 0,
-          y: 0
-      }
-  },
-  gameObjects: CreateGameObjects()
+    globals:
+    {
+        score: 0,
+    },
+    gameObjects: CreateGameObjects()
 }
 
 export default function reducer(state = generatorInitialState, action) {

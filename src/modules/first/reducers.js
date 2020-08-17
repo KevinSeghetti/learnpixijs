@@ -35,7 +35,7 @@ const FIRST_ACTION_HANDLERS = {
   {
       return {
           ...state,
-          gameObjects: GameTick(state.gameObjects,action.delta,action.keys,clipping)
+          ...GameTick(state,action.delta,action.keys,clipping)
       }
   },
 }
@@ -74,7 +74,11 @@ const CreateGameObjects = () =>
 //===============================================================================
 
 const firstInitialState = {
-  gameObjects: CreateGameObjects()
+    globals:
+    {
+        score: 0,
+    },
+    gameObjects: CreateGameObjects(),
 }
 
 export default function reducer(state = firstInitialState, action) {
