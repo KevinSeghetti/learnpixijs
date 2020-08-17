@@ -1,8 +1,7 @@
-// explosion
+// text
 import React from "react";
 import PropTypes from "prop-types";
 import { Text } from "react-pixi-fiber";
-import * as PIXI from "pixi.js";
 
 //-------------------------------------------------------------------------------
 
@@ -15,7 +14,6 @@ const frames = 1
 function Image(props) {
   const Component = props.as;
   return <Component x={props.x} y={props.y} text={props.text} />;
-  return null
 }
 Image.propTypes = {
   as: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),

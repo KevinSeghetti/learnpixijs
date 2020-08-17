@@ -78,7 +78,7 @@ const InnerObjects = (props) =>
 
     let objectList = props.shooter.gameObjects.map( (entry,index) =>
     {
-        if(entry.renderComponent)
+        if(entry.renderComponent && entry.animation.frameIndex >=0 )
         {
             if(entry.animation.frameIndex >= entry.renderComponent.gameData.frames)
             {

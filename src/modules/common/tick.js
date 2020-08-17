@@ -68,6 +68,14 @@ export const GameTick = (state,delta,keys,clipping) =>
     // tick all objects
     let newGameObjects = []
 
+
+    // kts smell: this experiment in using Redux for game state didn't go very
+    // well. Since we are not allowed to send a message (action) from inside
+    // of a reducer, I ended up bundling the entire game frame update into
+    // a single reducer, with a single tick() call.
+    // If I were to do this again, I would try having a tick() function that
+    // dispatched actions instead.
+
     const AddGameObject = (object) =>
     {
         //console.log("AddGameObject",object)
@@ -75,10 +83,30 @@ export const GameTick = (state,delta,keys,clipping) =>
     }
 
     let newScore = state.globals.score
+    let newPlayerLives = state.globals.playerLives
+    let newPlayerState = state.globals.playerState
 
     const ChangeScore = (delta) =>
     {
         newScore += delta
+    }
+
+    const ChangePlayerState = (newState) =>
+    {
+        newPlayerState = newState
+    }
+
+    const ChangePlayerLives = (delta) =>
+    {
+        newPlayerLives += delta
+    }
+
+    const Callbacks =
+    {
+        ChangeScore,
+        AddGameObject,
+        ChangePlayerState,
+        ChangePlayerLives,
     }
 
     let resultingGameObjects = state.gameObjects.map(
@@ -87,10 +115,9 @@ export const GameTick = (state,delta,keys,clipping) =>
             delta,
             clipping,
             keys,
-            AddGameObject,
+            Callbacks,
             collisionList[index],
             state,
-            ChangeScore,
         )
     )
     .filter(x => x)
@@ -103,6 +130,8 @@ export const GameTick = (state,delta,keys,clipping) =>
             {
                 ...state.globals,
                 score: newScore,
+                playerState: newPlayerState,
+                playerLives: newPlayerLives,
             },
 
         }

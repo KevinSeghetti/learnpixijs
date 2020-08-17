@@ -5,9 +5,9 @@ const Score = {
     Enemy: 10,
 }
 
-export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
+export const BulletObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
-    //console.log("BulletObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
+    //console.log("BulletObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
 
     // list of objects that kill us
     let localCollisionList = collisionList.filter( entry => [ 'Enemy', 'Rock'].includes(entry.type))
@@ -17,7 +17,7 @@ export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collis
         {
             if(entry.type === 'Enemy')
             {
-                ChangeScore(Score.Enemy)
+                Callbacks.ChangeScore(Score.Enemy)
             }
         }
     )
@@ -30,7 +30,7 @@ export const BulletObjectTick = (object,delta,clipping,keys,AddGameObject,collis
         return null
     }
 
-    return object.fallTick(object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
+    return object.fallTick(object,delta,clipping,keys,Callbacks,collisionList,state)
     // will eventually want a taller clipping window for this
 }
 

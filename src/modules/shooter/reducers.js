@@ -3,7 +3,7 @@
 import { types as shooterTypes } from 'modules/shooter/index'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
-import { CreatePlayerObject } from 'modules/common/playerObject'
+import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
 import { CreateScoreObject } from 'modules/common/scoreObject'
@@ -155,7 +155,14 @@ const CreateGameObjects = () =>
 
     const generationRate = RatePerSecond(4)
     objects.push(CreateGeneratorObject(0,2,shooterTypes.stageOptions.width,0,generationRate,GeneratedObjectFactory))
-    objects.push(CreatePlayerObject(shooterTypes.stageOptions.width/2,shooterTypes.stageOptions.height-20, PlayerComponent, BulletObjectFactory))
+    objects.push(CreatePlayerObject(
+        shooterTypes.stageOptions.width/2,
+        shooterTypes.stageOptions.height-20,
+        PlayerComponent,
+        BulletObjectFactory,
+        ExplosionObjectFactory,
+        )
+    )
     return objects
 }
 
@@ -168,21 +175,13 @@ const GameStates =
     PLAYING: 2,
 }
 
-const PlayerStates =
-{
-    INVALID: 0,
-    PLAYING: 1,
-    DYING:   2,          // playing explosion animation
-    DEAD:    3,           // no more lives, so between games
-}
-
 //-------------------------------------------------------------------------------
 
 const shooterInitialState = {
   globals:
-  {
+  {     // stored here so that other objects can see them.
       score: 0,
-      lives: 4,
+      playerLives: 4,
       gameState: GameStates.PLAYING,
       playerState: PlayerStates.PLAYING,
   },

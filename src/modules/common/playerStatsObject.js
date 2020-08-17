@@ -1,14 +1,11 @@
 import { CreateGameObject } from 'modules/common/gameObject'
-    import {
-        TextComponent,
-    } from "containers/shooter/Assets";
 
-export const PlayerStatsObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangePlayerStats) =>
+export const PlayerStatsObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
-    //console.log("PlayerStatsObjectTick",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangePlayerStats)
-    let result = object.baseTick(object,delta,clipping,keys,AddGameObject,collisionList,state,ChangePlayerStats)
+    //console.log("PlayerStatsObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state,ChangePlayerStats)
+    let result = object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state)
 
-    let newText = "Lives:" + state.globals.lives.toString()
+    let newText = "Lives:" + state.globals.playerLives.toString()
     return (
         {
             ...result,

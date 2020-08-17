@@ -1,10 +1,10 @@
 // modules/common/generator.js
 //===============================================================================
 
-export const GeneratorObjectTick = (object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore) =>
+export const GeneratorObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
     //object.wallClock
-    //console.log("GeneratorObjectTick:",object,delta,clipping,keys,AddGameObject,collisionList,state,ChangeScore)
+    //console.log("GeneratorObjectTick:",object,delta,clipping,keys,Callbacks,collisionList,state)
     let lastGenerated = object.lastGenerated
     if(object.wallClock > object.lastGenerated+object.rate )
     {
@@ -12,7 +12,7 @@ export const GeneratorObjectTick = (object,delta,clipping,keys,AddGameObject,col
         let x = object.position.x + (object.size.x*Math.random())
         let y = object.position.y + (object.size.y*Math.random())
         //console.log("calling add game object")
-        AddGameObject(object.generateObject(x,y))
+        Callbacks.AddGameObject(object.generateObject(x,y))
     }
     return {
      ...object,
