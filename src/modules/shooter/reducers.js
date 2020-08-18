@@ -1,9 +1,11 @@
 // modules/shooter/reducers
 
 import { types as shooterTypes } from 'modules/shooter/index'
+import { GameStates } from 'modules/common/tick'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
+import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
 import { CreateScoreObject } from 'modules/common/scoreObject'
@@ -168,11 +170,68 @@ const CreateGameObjects = () =>
 
 //===============================================================================
 
-const GameStates =
+const CreateAttractObjects = () =>
 {
-    INVALID: 0,
-    ATTRACT: 1,
-    PLAYING: 2,
+    let objects = []
+
+    const rotationSpeed = RadiansPerSecond((Math.PI*2)/4)
+    const movementSpeed = PixelsPerSecond(100)
+
+//  objects.push(
+//      {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
+//          clipping:backgroundClipping
+//      })
+
+    const objectCount = 40
+
+    const components = [RockComponent,PlayerComponent,BulletComponent,EnemyComponent]
+    for(let i = 0;i < objectCount; ++i)
+    {   // generate rocks
+        objects.push(
+            CreateGameObject(
+                'Rock',
+                shooterTypes.stageOptions.width*Math.random(),shooterTypes.stageOptions.height*Math.random(),0,
+                movementSpeed*Math.random(),movementSpeed*Math.random(),(rotationSpeed*Math.random()-(rotationSpeed/2)),
+                components[Math.floor(Math.random()*components.length)],
+            )
+        )
+    }
+
+    // text objects
+    objects.push(
+        {
+            ...CreateGameObject(
+                'GameOver',
+                (shooterTypes.stageOptions.width/2)-40,(shooterTypes.stageOptions.height/2)-40,0,
+                0,0,0,
+                TextComponent,
+            ),
+            renderData:
+            {
+                text:"Game Over"
+            }
+        }
+    )
+
+    objects.push(
+        {
+            ...CreateGameObject(
+                'Start',
+                (shooterTypes.stageOptions.width/2)-80,(shooterTypes.stageOptions.height/2)+40,0,
+                0,0,0,
+                TextComponent,
+            ),
+            renderData:
+            {
+                text:"Press s To Start"
+            }
+        }
+    )
+
+    // this object listens for button presses to start the game
+    objects.push(CreateAttractObject() )
+
+    return objects
 }
 
 //-------------------------------------------------------------------------------
@@ -182,10 +241,11 @@ const shooterInitialState = {
   {     // stored here so that other objects can see them.
       score: 0,
       playerLives: 4,
-      gameState: GameStates.PLAYING,
+      gameState: GameStates.ATTRACT,
       playerState: PlayerStates.PLAYING,
   },
-  gameObjects: CreateGameObjects()
+  gameObjects: CreateGameObjects(),
+  attractObjects: CreateAttractObjects(),
 }
 
 export default function reducer(state = shooterInitialState, action) {

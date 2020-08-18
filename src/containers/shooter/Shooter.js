@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from "react";
 import PropTypes from 'prop-types'
 import { withApp, Container, Stage } from "react-pixi-fiber";
+import { GameStates  } from 'modules/common/tick'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -19,6 +20,7 @@ const OPTIONS = {
 
 //===============================================================================
 
+// kts TODO: make this take an array of keys
 function useKey(key) {
     // Keep track of key state
     const [pressed, setPressed] = useState(false)
@@ -53,11 +55,14 @@ function useKey(key) {
 
 const InnerObjects = (props) =>
 {
-    //console.log("inner ",props)
+    //console.log("InnerObjects ",props)
 
+
+    // kts TODO: make this array driven
     let arrowLeft = useKey('arrowLeft')
     let arrowRight = useKey('arrowRight')
     let space = useKey(' ')
+    let sKey = useKey('s')
 
     //console.log('InnerObjects',arrowLeft, arrowRight,space)
     let keys = {
@@ -76,7 +81,20 @@ const InnerObjects = (props) =>
         keys['space'] = true
     }
 
-    let objectList = props.shooter.gameObjects.map( (entry,index) =>
+    if(sKey)
+    {
+        keys['s'] = true
+    }
+
+    // default to gameplay
+    let gameObjects = props.shooter.gameObjects
+
+    if(props.shooter.globals.gameState === GameStates.ATTRACT)
+    {
+        gameObjects = props.shooter.attractObjects
+
+    }
+    let objectList = gameObjects.map( (entry,index) =>
     {
         if(entry.renderComponent && entry.animation.frameIndex >=0 )
         {

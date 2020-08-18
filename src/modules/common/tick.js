@@ -1,6 +1,19 @@
 // modules/common/tick.js
 //===============================================================================
 
+import { PlayerStates } from 'modules/common/playerObject'
+
+//===============================================================================
+
+export const GameStates =
+{
+    INVALID: 0,
+    ATTRACT: 1,
+    PLAYING: 2,
+}
+
+//===============================================================================
+
 const CheckCollision = (first,second) =>
 {
     //console.log("CheckCollision:first",first)
@@ -34,7 +47,17 @@ export const GameTick = (state,delta,keys,clipping) =>
     // collisionList has an entry for each game object, containing an array of other objects that object overlaps with
     let collisionList = []
 
-    state.gameObjects.forEach( (entry,index) =>
+    // kts smell: think of a better way to do this
+    let gameObjects = state.gameObjects
+    let gameObjectsName = 'gameObjects'
+
+    if(state.globals.gameState === GameStates.ATTRACT)
+    {
+        gameObjects = state.attractObjects
+        gameObjectsName = 'attractObjects'
+    }
+
+    gameObjects.forEach( (entry,index) =>
     {
         let collides = true
         if(entry.collision)
@@ -45,7 +68,7 @@ export const GameTick = (state,delta,keys,clipping) =>
         if(collides)
         {
             // inner loop. Go over every object comparing to this one
-            state.gameObjects.forEach( (innerEntry,innerIndex) =>
+            gameObjects.forEach( (innerEntry,innerIndex) =>
                 {
                     collisionList.push([])
 
@@ -85,6 +108,7 @@ export const GameTick = (state,delta,keys,clipping) =>
     let newScore = state.globals.score
     let newPlayerLives = state.globals.playerLives
     let newPlayerState = state.globals.playerState
+    let newGameState = state.globals.gameState
 
     const ChangeScore = (delta) =>
     {
@@ -101,15 +125,31 @@ export const GameTick = (state,delta,keys,clipping) =>
         newPlayerLives += delta
     }
 
+    const StartNewGame = () =>
+    {
+        // kts TODO: refactor creation of game object list so it gets called from here
+        newGameState = GameStates.PLAYING
+        newPlayerLives = 4
+        newScore = 0
+        newPlayerState = PlayerStates.PLAYING
+    }
+
+    const GameOver = () =>
+    {
+        newGameState = GameStates.ATTRACT
+    }
+
     const Callbacks =
     {
         ChangeScore,
         AddGameObject,
         ChangePlayerState,
         ChangePlayerLives,
+        StartNewGame,
+        GameOver,
     }
 
-    let resultingGameObjects = state.gameObjects.map(
+    let resultingGameObjects = gameObjects.map(
         (entry,index) => entry.tick(
             entry,
             delta,
@@ -122,15 +162,17 @@ export const GameTick = (state,delta,keys,clipping) =>
     )
     .filter(x => x)
 
+
     return (
         {
             ...state,
-            gameObjects: [...resultingGameObjects, ...newGameObjects ],
+            [gameObjectsName]: [...resultingGameObjects, ...newGameObjects ],
             globals:
             {
                 ...state.globals,
                 score: newScore,
                 playerState: newPlayerState,
+                gameState: newGameState,
                 playerLives: newPlayerLives,
             },
 

@@ -31,6 +31,11 @@ export const PlayerTick = (object,delta,clipping,keys,Callbacks,collisionList,st
 
     if(playerState === PlayerStates.DYING)
     {
+        if(state.globals.playerLives <= 0)
+        {
+            Callbacks.ChangePlayerState(PlayerStates.DEAD)
+            Callbacks.GameOver()
+        }
 
         if(object.wallClock > lastGenerated+deadTime && state.globals.playerLives > 0)
         {
