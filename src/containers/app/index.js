@@ -7,6 +7,7 @@ import Home from "containers/home";
 import First from "containers/first";
 import Generator from "containers/generator";
 import Shooter from "containers/shooter";
+import Filters from "containers/filters";
 
 import "./App.scss";
 
@@ -19,6 +20,7 @@ const App = () => (
       <Link to="/first">First</Link>
       <Link to="/generator">Generator</Link>
       <Link to="/shooter">Shooter</Link>
+      <Link to="/filters">Filters</Link>
     </header>
 
     <main>
@@ -26,6 +28,7 @@ const App = () => (
       <Route exact path="/first" component={First} />
       <Route exact path="/generator" component={Generator} />
       <Route exact path="/shooter" component={Shooter} />
+      <Route exact path="/filters" component={Filters} />
     </main>
   </div>
 )

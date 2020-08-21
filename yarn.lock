@@ -1372,7 +1372,7 @@
   dependencies:
     "@pixi/core" "5.3.3"
 
-"@pixi/filter-displacement@5.3.3":
+"@pixi/filter-displacement@5.3.3", "@pixi/filter-displacement@^5.3.3":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/@pixi/filter-displacement/-/filter-displacement-5.3.3.tgz#f25193f738b90cc75cd04bbbcd0aefe9ea037af1"
   integrity sha512-kvrKMgqW4ELg+yT2p5vmu6h/IER/L8GD1PWyXovnzpI8RG7k8l136F9VvA3wkB6sYuNcXiDtqMtRQy5e6O4+rw==
@@ -9490,10 +9490,10 @@ react-overlays@^4.1.0:
     uncontrollable "^7.0.0"
     warning "^4.0.3"
 
-react-pixi-fiber@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/react-pixi-fiber/-/react-pixi-fiber-0.14.1.tgz#e0b88c1487b557fb5c9f2b7eae0628c9a4b0288d"
-  integrity sha512-+WGlTvjgrOnZMNFESk0qxyODvZnImNHqt3wNylikfVojukHIS7EGfJZ4ZyikjH7380rCQ+GxjKEZfG3reRNqqA==
+react-pixi-fiber@^1.0.0-beta.2:
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/react-pixi-fiber/-/react-pixi-fiber-1.0.0-beta.2.tgz#01162aae55a45d875259b4f95b28bc00c0b69882"
+  integrity sha512-TdnpGDks/+ie1EplD87lXLooWyNYkgkpQBAsMxb15n5kWfDl0m4Bn4sUWgOS1OsJot6SuF/jOyAsCyrAi+oSqw==
   dependencies:
     fbjs "^0.8.0"
     performance-now "^2.1.0"
