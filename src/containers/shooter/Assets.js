@@ -1,17 +1,21 @@
-import Player     from "components/Player";
-import Bullet     from "components/Bullet";
-import Enemy      from "components/Enemy";
-import Explosion  from "components/Explosion";
-import Rock       from "components/Rock";
-import Background from "components/Backgrounds";
-import Text       from "components/Text";
+import {PixiComponentFactory} from "components/PixiComponentFactory"
 
-export const PlayerComponent     = Player
-export const BulletComponent     = Bullet
-export const EnemyComponent      = Enemy
-export const ExplosionComponent  = Explosion
-export const RockComponent       = Rock
-export const BackgroundComponent = Background
+import playerImage      from "components/images/player.png";
+import bulletImage      from "components/images/bullet.png";
+import enemyImage       from "components/images/enemy.png";
+import explosionImage   from "components/images/explosion.png";
+import backgroundImage  from "components/images/background.png";
+import rockImage        from "components/images/rock.png";
+import Text             from "components/Text";
+
+// kts TODO: learn to read size of image automatically
+export const PlayerComponent      = PixiComponentFactory(playerImage     ,60,54,1)
+export const BulletComponent      = PixiComponentFactory(bulletImage     ,12,20,1)
+export const EnemyComponent       = PixiComponentFactory(enemyImage      ,31,28,1)
+export const ExplosionComponent   = PixiComponentFactory(explosionImage  ,25,28,1)
+export const BackgroundComponent = PixiComponentFactory(backgroundImage  ,6000,6000,1)
+export const RockComponent        = PixiComponentFactory(rockImage       ,20,19,1)
+
 export const TextComponent       = Text
 
 

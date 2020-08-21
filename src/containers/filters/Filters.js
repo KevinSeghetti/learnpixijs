@@ -1,69 +1,83 @@
-import React, { useState, useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { Container, Sprite, Stage, TilingSprite } from "react-pixi-fiber";
-import * as PIXI from "pixi.js";
-import "@pixi/filter-displacement";
+import React,{useEffect} from "react";
+import PropTypes from 'prop-types'
+import { withApp, Container, Stage } from "react-pixi-fiber";
 
-import displacement_BG  from "./displacement_BG.jpg";
-import overlay          from "./overlay.png";
-import displacement_map from "./displacement_map.png";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+import './Filters.scss';
+import CreateLogger from 'components/loggingConfig'
 
-const OPTIONS = {
-  backgroundColor: 0x1099bb,
-  height: 400,
-  width: 400
-};
+//===============================================================================
 
-const bgTexture           = PIXI.Texture.from(displacement_BG );
-const overlayTexture      = PIXI.Texture.from(overlay         );
-const displacementTexture = PIXI.Texture.from(displacement_map);
+let log = CreateLogger("filters")
 
-export function Filters() {
-  const [filters, setFilters] = useState([]);
-  const displacementSprite = useRef();
-  const overlaySprite = useRef();
+//===============================================================================
 
-  useEffect(() => {
-    console.log(overlaySprite.current);
-    console.log(displacementSprite.current);
+const InnerObjects = (props) =>
+{
+    //console.log("InnerObjects ",props)
 
-    const move = () => {
-      overlaySprite.current.tilePosition.x -= 1;
-      overlaySprite.current.tilePosition.y -= 1;
+    let objectList = props.filters.gameObjects.map( (entry,index) =>
+    {
+            //console.log("inner",entry,index)
+
+        if(entry.renderComponent)
+        {
+            return <entry.renderComponent key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
+        }
+        return null
+    }
+    )
+
+    const animate = delta => {
+        props.tick(props.app.ticker.elapsedMS)
     };
 
-    setFilters([
-      new PIXI.filters.DisplacementFilter(displacementSprite.current, 50)
-    ]);
+    useEffect(() => {
+        props.app.ticker.add(animate)
 
-    PIXI.Ticker.shared.add(move, this);
+        return function cleanup() {
+                   props.app.ticker.remove(animate);
+        }
+    })
 
-    return () => {
-      PIXI.Ticker.shared.remove(move, this);
-    };
-  }, []);
+    return (
+        <Container ref={c => (window.example = c)}>
+            { objectList }
+        </Container>
+    )
+}
+
+InnerObjects.propTypes = {
+    filters      : PropTypes.object.isRequired,
+    tick      : PropTypes.func.isRequired,
+}
+
+//-------------------------------------------------------------------------------
+
+const InnerObjectsWithApp = withApp(InnerObjects)
+
+export const Filters = props => {
+  log.trace("Filters renderer:",props)
 
   return (
-    <div>
-      <h2>top</h2>
-    <Stage options={OPTIONS}>
-      <Container filters={filters}>
-        <Sprite texture={bgTexture} />
-        <TilingSprite
-          ref={overlaySprite}
-          texture={overlayTexture}
-          width={512}
-          height={512}
-        />
-        <Sprite
-          ref={displacementSprite}
-          texture={displacementTexture}
-          alpha={0.5}
-        />
-      </Container>
-    </Stage>
-   </div>
+    <div className="Filters" >
+      <h2>Filters</h2>
+        <Stage options={props.stageOptions}>
+            <InnerObjectsWithApp filters={props.filters} tick={props.tick} />
+        </Stage>
+    </div>
   );
 }
+
+//-------------------------------------------------------------------------------
+
+Filters.propTypes = {
+    filters      : PropTypes.object.isRequired,
+    stageOptions: PropTypes.object.isRequired,
+    tick      : PropTypes.func.isRequired,
+}
+
+//===============================================================================
+
 

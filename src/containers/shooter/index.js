@@ -10,8 +10,7 @@ import { actions as shooterActions } from 'modules/shooter'
 
 const mapStateToProps = (state) => {
     return {
-        state         : state,
-        shooter       : state.app.shooter,
+        state      : state.app.shooter,
     }
 }
 

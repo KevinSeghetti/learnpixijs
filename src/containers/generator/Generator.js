@@ -1,7 +1,7 @@
-import React,{useEffect} from "react";
+import React from "react";
 import PropTypes from 'prop-types'
-import { withApp, Container, Stage } from "react-pixi-fiber";
-import Bunny from "components/Bunny";
+import { Stage } from "react-pixi-fiber";
+import { WorldRenderer } from 'components/WorldRenderer'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -20,50 +20,6 @@ const OPTIONS = {
 
 //===============================================================================
 
-// kts TODO: move InnerObjects into shared file (and rename)
-
-const InnerObjects = (props) =>
-{
-    //console.log("inner ",props)
-
-    let objectList = props.generator.gameObjects.map( (entry,index) =>
-    {
-        if(entry.animation && entry.animation.frameIndex >= 0)
-        {
-            return <Bunny key={index} x={entry.position.x} y={entry.position.y} texture={entry.animation.frameIndex} rotation={entry.position.r} />
-        }
-        return null
-    }
-    )
-
-    const animate = delta => {
-        props.tick(props.app.ticker.elapsedMS)
-    };
-
-    useEffect(() => {
-        props.app.ticker.add(animate)
-
-        return function cleanup() {
-                   props.app.ticker.remove(animate);
-        }
-    })
-
-    return (
-        <Container ref={c => (window.example = c)}>
-            { objectList }
-        </Container>
-    )
-}
-
-InnerObjects.propTypes = {
-    generator      : PropTypes.object.isRequired,
-    tick           : PropTypes.func.isRequired,
-}
-
-//-------------------------------------------------------------------------------
-
-const InnerObjectsWithApp = withApp(InnerObjects)
-
 export const Generator = props => {
   log.trace("Generator renderer:",props)
 
@@ -71,7 +27,7 @@ export const Generator = props => {
     <div className="Generator" >
       <h2>Generator</h2>
         <Stage options={OPTIONS}>
-            <InnerObjectsWithApp generator={props.generator} tick={props.tick} />
+            <WorldRenderer state={props.generator} tick={props.tick} />
         </Stage>
     </div>
   );

@@ -1,5 +1,6 @@
-import Bunny from "components/Bunny";
+import {PixiComponentFactory} from "components/PixiComponentFactory"
 
-export const BunnyComponent = Bunny
+import bunnyImage      from "components/images/bunnys.png"
 
+export const BunnyComponent      = PixiComponentFactory(bunnyImage   ,26,37,5)
 
