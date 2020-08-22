@@ -4,13 +4,12 @@ import { PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { types as filtersTypes } from 'modules/filters/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
-import {BunnyComponent} from "containers/filters/Assets";
 
 import {
     BackgroundComponent,
-//    DisplacementComponent,
-//    TextComponent,
-} from "containers/shooter/Assets";
+    BunnyComponent,
+    PixiFilterComponent,
+} from "containers/filters/Assets";
 
 
 import CreateLogger from 'components/loggingConfig'
@@ -71,10 +70,21 @@ const CreateGameObjects = () =>
 {
     let objects = []
 
+        let backgroundSpeed = 0
+        objects.push(
+            {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(backgroundSpeed),PixelsPerSecond(backgroundSpeed),0,BackgroundComponent,0,false),
+                clipping:backgroundClipping
+            })
+
+
     objects.push(
-        {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
-            clipping:backgroundClipping
+        {...CreateGameObject('displacement map',256,256,0,PixelsPerSecond(20),PixelsPerSecond(20),0,PixiFilterComponent,0,false),
+            clipping:backgroundClipping,
+            pixiFilter: true,
+            scale: 2,
         })
+
+
 
     const rotationSpeed = RadiansPerSecond(Math.PI*2)
     const movementSpeed = PixelsPerSecond(400)

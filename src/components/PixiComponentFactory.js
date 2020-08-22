@@ -18,11 +18,11 @@ export const PixiComponentFactory = (image,width,height,frames)  =>
         new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(width*0, height*0, width, height)),
     ];
 
-    let Image = ({as:Component, texture: textureIndex, ...rest}) =>
+    let Image = React.forwardRef( ({as:Component, texture: textureIndex, ...rest},ref) =>
     {
         const texture = textures[textureIndex];
-        return <Component anchor={centerAnchor} {...rest} texture={texture} />;
-    }
+        return <Component ref={ref} anchor={centerAnchor} {...rest} texture={texture} />;
+    })
     Image.propTypes =
     {
       as: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
