@@ -4,6 +4,7 @@ import { PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { types as filtersTypes } from 'modules/filters/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
+import * as PIXI from "pixi.js";
 
 import {
     BackgroundComponent,
@@ -80,11 +81,11 @@ const CreateGameObjects = () =>
     objects.push(
         {...CreateGameObject('displacement map',256,256,0,PixelsPerSecond(20),PixelsPerSecond(20),0,PixiFilterComponent,0,false),
             clipping:backgroundClipping,
-            pixiFilter: true,
+            pixiFilter: (ref) => {
+                return new PIXI.filters.DisplacementFilter(ref, 200)
+            },
             scale: 2,
         })
-
-
 
     const rotationSpeed = RadiansPerSecond(Math.PI*2)
     const movementSpeed = PixelsPerSecond(400)

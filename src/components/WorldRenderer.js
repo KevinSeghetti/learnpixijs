@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react";
+import React,{ useState, useRef, useEffect } from "react";
 import PropTypes from 'prop-types'
 import { withApp, Container } from "react-pixi-fiber";
 import { GameStates  } from 'modules/common/tick'
@@ -17,21 +17,22 @@ function useKey(key) {
     // Keep track of key state
     const [pressed, setPressed] = useState(false)
 
-    // Does an event match the key we're watching?
-    const match = event => key.toLowerCase() === event.key.toLowerCase()
-
-    // Event handlers
-    const onDown = event => {
-        //console.log("useKey: down",event,key,match(event))
-        if (match(event)) setPressed(true)
-    }
-
-    const onUp = event => {
-        if (match(event)) setPressed(false)
-    }
-
     // Bind and unbind events
     useEffect(() => {
+
+        // Does an event match the key we're watching?
+        const match = event => key.toLowerCase() === event.key.toLowerCase()
+
+        // Event handlers
+        const onDown = event => {
+            //console.log("useKey: down",event,key,match(event))
+            if (match(event)) setPressed(true)
+        }
+
+        const onUp = event => {
+            if (match(event)) setPressed(false)
+        }
+
         window.addEventListener("keydown", onDown)
         window.addEventListener("keyup", onUp)
         return () => {
@@ -47,6 +48,8 @@ function useKey(key) {
 
 const InnerObjects = ({state,tick,app}) =>
 {
+    log.trace("WorldRenderer::InnerObjects:renderer:",state,tick,app)
+
     //console.log("InnerObjects ",state,tick,app)
 
     // kts TODO: make this array driven
@@ -58,7 +61,25 @@ const InnerObjects = ({state,tick,app}) =>
     //console.log('InnerObjects',arrowLeft, arrowRight,space)
     let keys = {
     }
+    const itemsRef = useRef([]);
+
+    const [filters, setFilters] = useState([])
+
+    let filterObjectList = state.gameObjects.filter( (entry,index) => entry.pixiFilter)
+    // kts TODO: handle degenerate case where one filter gets added while another gets subtracted
+    useEffect(() => {
+       itemsRef.current = itemsRef.current.slice(0, filterObjectList.length);
+
+       log.trace("filterObjectList",filterObjectList)
+       setFilters(
+           filterObjectList.map( (entry,index) =>
+               entry.pixiFilter(itemsRef.current[index])
+           )
+       )
+    }, [filterObjectList]);
+
     // kts TODO: pass array of keys to useKey
+
     if(arrowLeft)
     {
         keys['arrowLeft'] = true
@@ -77,7 +98,8 @@ const InnerObjects = ({state,tick,app}) =>
         keys['s'] = true
     }
 
-    // default to gameplay
+    // kts smell: maybe just have a ref for every game object instead?
+    let filterIndex = 0
     let gameObjects = state.gameObjects
 
     if(state.globals.gameState === GameStates.ATTRACT)
@@ -93,6 +115,15 @@ const InnerObjects = ({state,tick,app}) =>
             {
                 console.error(`Shooter: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
             }
+        let extra = {}
+        if(entry.pixiFilter)
+            {
+            extra.ref = el => itemsRef.current[filterIndex++] = el
+        }
+        if(entry.scale)
+        {
+            extra.scale = entry.scale
+        }
             return <entry.renderComponent
                     key={index}
                     x={entry.position.x}
@@ -100,6 +131,7 @@ const InnerObjects = ({state,tick,app}) =>
                     texture={entry.animation.frameIndex}
                     rotation={entry.position.r}
                     {...entry.renderData}
+                    {...extra }
             />
         }
         return null
@@ -119,7 +151,7 @@ const InnerObjects = ({state,tick,app}) =>
     })
 
     return (
-        <Container ref={c => (window.example = c)}>
+        <Container ref={c => (window.example = c)}  filters={filters}>
             { objectList }
         </Container>
     )
