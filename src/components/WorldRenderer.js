@@ -65,18 +65,20 @@ const InnerObjects = ({state,tick,app}) =>
 
     const [filters, setFilters] = useState([])
 
-    let filterObjectList = state.gameObjects.filter( (entry,index) => entry.pixiFilter)
-    // kts TODO: handle degenerate case where one filter gets added while another gets subtracted
-    useEffect(() => {
-       itemsRef.current = itemsRef.current.slice(0, filterObjectList.length);
-
-       log.trace("filterObjectList",filterObjectList)
-       setFilters(
-           filterObjectList.map( (entry,index) =>
-               entry.pixiFilter(itemsRef.current[index])
-           )
-       )
-    }, [filterObjectList]);
+    // kts TODO: was having an issue on reload where useEffect/setState were getting into a recursive loop
+    let filterObjectList = []
+//  let filterObjectList = state.gameObjects.filter( (entry,index) => entry.pixiFilter)
+//  // kts TODO: handle degenerate case where one filter gets added while another gets subtracted
+//  useEffect(() => {
+//     itemsRef.current = itemsRef.current.slice(0, filterObjectList.length);
+//
+//     log.trace("filterObjectList",filterObjectList)
+//     setFilters(
+//         filterObjectList.map( (entry,index) =>
+//             entry.pixiFilter(itemsRef.current[index])
+//         )
+//     )
+//  }, [filterObjectList]);
 
     // kts TODO: pass array of keys to useKey
 
@@ -111,7 +113,7 @@ const InnerObjects = ({state,tick,app}) =>
     {
         if(entry.renderComponent && entry.animation.frameIndex >=0 )
         {
-            if(entry.animation.frameIndex >= entry.renderComponent.gameData.frames)
+            if(entry.renderComponent.gameData && entry.animation.frameIndex >= entry.renderComponent.gameData.frames)
             {
                 console.error(`Shooter: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
             }

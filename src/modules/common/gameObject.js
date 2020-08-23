@@ -41,6 +41,8 @@ export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, durat
 }
 
 //===============================================================================
+// kts TODO: make a better object constructor, one that makes it easy to specify various
+// parameters, but doesn't assume things like an animation speed
 
 export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex=0,collides=true) =>
 {

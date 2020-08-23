@@ -20,16 +20,19 @@ const CheckCollision = (first,second) =>
     //console.log("CheckCollision:second",second)
     if(first.renderComponent && second.renderComponent)
     {
-        let firstSize = first.renderComponent.gameData.size
-        let secondSize = second.renderComponent.gameData.size
-
-        if(
-            first.position.x               < second.position.x + secondSize.x &&
-            first.position.x + firstSize.x > second.position.x &&
-            first.position.y               < second.position.y + secondSize.y &&
-            first.position.y + firstSize.y > second.position.y)
+        if(first.renderComponent.gameData && second.renderComponent.gameData)
         {
-            return true
+            let firstSize = first.renderComponent.gameData.size
+            let secondSize = second.renderComponent.gameData.size
+
+            if(
+                first.position.x               < second.position.x + secondSize.x &&
+                first.position.x + firstSize.x > second.position.x &&
+                first.position.y               < second.position.y + secondSize.y &&
+                first.position.y + firstSize.y > second.position.y)
+            {
+                return true
+            }
         }
     }
     return false
