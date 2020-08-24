@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react"
+import React from "react"
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
 
@@ -62,21 +62,6 @@ const uniforms = {
 
 const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, uniforms)
 
-//const quad = new PIXI.Mesh(geometry, shader)
-//
-//quad.position.set(400, 300)
-//quad.scale.set(2)
-
-//app.stage.addChild(quad)
-//
-//// start the animation..
-//// requestAnimationFrame(animate)
-//
-//app.ticker.add((delta) => {
-//    quad.rotation += 0.01
-//    quad.shader.uniforms.time += 0.1
-//})
-
 const TYPE = "MeshWithShader"
 const behavior = {
   customDisplayObject: props => new PIXI.Mesh(geometry, shader),
@@ -84,10 +69,6 @@ const behavior = {
       if(oldProps === undefined) {
           return
       }
-//    if (Object.keys(oldProps).length !== 0) {
-//      return
-//    }
-//
       this.applyDisplayObjectProps(oldProps, newProps)
       instance.shader.uniforms.time = newProps.texture/5.0
       instance.position.set(newProps.x,newProps.y)
@@ -96,9 +77,11 @@ const behavior = {
 
 let Shader = CustomPIXIComponent(behavior, TYPE)
 
+// unclear to me why the Shader is coming back as a string. Wrapping it in this component
+// so I can add the game data. (kts smell: unsure if adding gameData to render components
+// is a good design, or if we should move that data up a level)
 let ShaderComponent = (props) =>
 {
-    //console.log("ShaderComponent",props)
     return <Shader {...props} />
 }
 
