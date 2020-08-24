@@ -10,13 +10,32 @@ import * as PIXI from "pixi.js";
 
 const centerAnchor = new PIXI.Point(0.5, 0.5);
 
+
+// kts TODO: use asset loader so we don't have to manually enter the width/height of images
+// https://github.com/pixijs/pixi.js/issues/35
+
 export const PixiComponentFactory = (image,width,height,frames)  =>
 {
+    let frameCount = 1
     const imageTextures = new PIXI.Texture.from(image);
+    //console.log("PixiComponentFactory",width,height,"@@",imageTextures.width,imageTextures.height,frames)
 
-    const textures = [
-        new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(width*0, height*0, width, height)),
-    ];
+    let textures
+    if(frames )
+    {
+        textures = frames.map( (entry,index) =>
+            new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(entry.width, entry.height, width, height)),
+        )
+        frameCount = frames.length
+    }
+    else
+    {
+        width = imageTextures.width
+        height = imageTextures.height
+        textures = [
+            new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(0, 0, width, height)),
+        ];
+    }
 
     let Image = React.forwardRef( ({as:Component, texture: textureIndex, ...rest},ref) =>
     {
@@ -36,7 +55,7 @@ export const PixiComponentFactory = (image,width,height,frames)  =>
 
     Image.gameData = {
         size : { x:width,y:height},
-        frames,
+        frames:frameCount,
     }
 
     return Image

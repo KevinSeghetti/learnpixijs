@@ -9,12 +9,36 @@ import rockImage        from "components/images/rock.png";
 import Text             from "components/Text";
 
 // kts TODO: learn to read size of image automatically
-export const PlayerComponent      = PixiComponentFactory(playerImage     ,60,54,1)
-export const BulletComponent      = PixiComponentFactory(bulletImage     ,12,20,1)
-export const EnemyComponent       = PixiComponentFactory(enemyImage      ,31,28,1)
-export const ExplosionComponent   = PixiComponentFactory(explosionImage  ,25,28,1)
-export const BackgroundComponent = PixiComponentFactory(backgroundImage  ,6000,6000,1)
-export const RockComponent        = PixiComponentFactory(rockImage       ,20,19,1)
+export const PlayerComponent      = PixiComponentFactory(playerImage     ,60,54)
+export const BulletComponent      = PixiComponentFactory(bulletImage     ,12,20)
+export const EnemyComponent       = PixiComponentFactory(enemyImage      ,31,28)
+
+const width = 25
+const height = 28
+
+// kts TODO: turn this into an object which encodes number of frames in animation, and supports multiple animations
+// kts automate this
+const explosionFrames = [
+    {width: width*0, height: height*0},
+    {width: width*0, height: height*1},
+    {width: width*0, height: height*2},
+    {width: width*1, height: height*0},
+    {width: width*1, height: height*1},
+    {width: width*1, height: height*2},
+    {width: width*2, height: height*0},
+    {width: width*2, height: height*1},
+    {width: width*2, height: height*2},
+    {width: width*3, height: height*0},
+    {width: width*3, height: height*1},
+    {width: width*3, height: height*2},
+    {width: width*4, height: height*0},
+    {width: width*4, height: height*1},
+    {width: width*4, height: height*2},
+];
+
+export const ExplosionComponent   = PixiComponentFactory(explosionImage  ,25,28,explosionFrames)
+export const BackgroundComponent  = PixiComponentFactory(backgroundImage ,6000,6000)
+export const RockComponent        = PixiComponentFactory(rockImage       ,20,19)
 
 export const TextComponent       = Text
 
