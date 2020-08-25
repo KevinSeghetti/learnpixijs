@@ -18,7 +18,9 @@ import {
     EnemyComponent,
     ExplosionComponent,
     RockComponent,
+    TileSetComponent,
     BackgroundComponent,
+    MapComponent,
     TextComponent,
 } from "containers/scroller/Assets";
 
@@ -85,6 +87,8 @@ const CreateGameObjects = () =>
         {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
             clipping:backgroundClipping
         })
+
+
 
     const objectCount = 5
     for(let i = 0;i < objectCount; ++i)
@@ -178,8 +182,20 @@ const CreateAttractObjects = () =>
     const movementSpeed = PixelsPerSecond(100)
 
     objects.push(
-        {...CreateGameObject('Background',0,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
+        {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
             clipping:backgroundClipping
+        })
+
+    // tile set
+//  objects.push(
+//      {...CreateGameObject('TileSet',0,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,TileSetComponent,0,false),
+//          clipping:backgroundClipping
+//      })
+
+    // map, with custom renderer
+    objects.push(
+        {...CreateGameObject('Map',200,200,0,PixelsPerSecond(40),PixelsPerSecond(40),0,MapComponent,0,false),
+            //clipping:backgroundClipping
         })
 
 

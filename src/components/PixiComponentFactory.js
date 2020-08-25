@@ -11,9 +11,6 @@ import * as PIXI from "pixi.js";
 const centerAnchor = new PIXI.Point(0.5, 0.5);
 
 
-// kts TODO: use asset loader so we don't have to manually enter the width/height of images
-// https://github.com/pixijs/pixi.js/issues/35
-
 export const PixiComponentFactory = (image,width,height,frames)  =>
 {
     let frameCount = 1
@@ -30,8 +27,11 @@ export const PixiComponentFactory = (image,width,height,frames)  =>
     }
     else
     {
-        width = imageTextures.width
-        height = imageTextures.height
+        // kts TODO: use asset loader so we don't have to manually enter the width/height of images
+        // https://github.com/pixijs/pixi.js/issues/35
+        // kts can't do this here, data might not be loaded yet
+        //width = imageTextures.width
+        //height = imageTextures.height
         textures = [
             new PIXI.Texture(imageTextures.baseTexture, new PIXI.Rectangle(0, 0, width, height)),
         ];
