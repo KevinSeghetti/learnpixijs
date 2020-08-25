@@ -26,7 +26,7 @@ export const PlayerTick = (object,delta,clipping,keys,Callbacks,collisionList,st
     let lastGenerated = object.lastGenerated
     let xDelta = 0
     let playerState = state.globals.playerState
-    console.log("playerstate",playerState)
+    //console.log("playerstate",playerState)
     let animation = object.animation
 
     if(playerState === PlayerStates.DYING)

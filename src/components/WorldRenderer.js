@@ -115,7 +115,7 @@ const InnerObjects = ({state,tick,app}) =>
         {
             if(entry.renderComponent.gameData && entry.animation.frameIndex >= entry.renderComponent.gameData.frames)
             {
-                console.error(`Shooter: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
+                console.error(`WorldRenderer: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
             }
         let extra = {}
         if(entry.pixiFilter)

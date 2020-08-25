@@ -81,9 +81,9 @@ const CreateGameObjects = () =>
     objects.push(
         {...CreateGameObject('displacement map',256,256,0,PixelsPerSecond(20),PixelsPerSecond(20),0,PixiFilterComponent,0,false),
             clipping:backgroundClipping,
-            pixiFilter: (ref) => {
-                return new PIXI.filters.DisplacementFilter(ref, 200)
-            },
+//          pixiFilter: (ref) => {
+//              return new PIXI.filters.DisplacementFilter(ref, 200)
+//          },
             scale: 2,
         })
 
