@@ -4,18 +4,19 @@ import React from "react"
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
 
-import image from 'components/images/scroller/PlatformTilesets32x32.png'
+import tileSet from 'components/images/scroller/PlatformTilesets32x32.png'
 import tileMap from 'components/images/scroller/platform.json'
 
 //const app = new PIXI.Application()
 //document.body.appendChild(app.view)
 
+const size = 300
 const geometry = new PIXI.Geometry()
     .addAttribute('aVertexPosition', // the attribute name
-        [  -100, -100, // x, y
-            100, -100, // x, y
-            100,  100,
-           -100,  100
+        [  -size, -size, // x, y
+            size, -size, // x, y
+            size,  size,
+           -size,  size
         ], // x, y
         2) // the size of the attribute
     .addAttribute('aUvs', // the attribute name
@@ -37,41 +38,131 @@ const vertexSrc = `
     uniform mat3 translationMatrix;
     uniform mat3 projectionMatrix;
 
+    uniform float mapDisplayWidth;
+    uniform float mapDisplayHeight;
+
     varying vec2 vUvs;
+    varying vec2 tileCoords;
 
     void main() {
 
         vUvs = aUvs;
+        tileCoords = vec2(mapDisplayWidth,mapDisplayHeight)*aUvs;
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
     }`;
+
+let RED   = "1.0,0.0,0.0,1.0"
+let GREEN = "0.0,1.0,0.0,1.0"
+let BLUE  = "0.0,0.0,1.0,1.0"
+let GREY  = "0.5,0.5,0.5,1.0"
+let YELLOW  = "1.0,1.0,0.5,1.0"
+
 
 const fragmentSrc = `
 
     precision mediump float;
 
     varying vec2 vUvs;
+    varying vec2 tileCoords;
 
-    uniform sampler2D uSampler2;
+    uniform sampler2D uTileSet;
     uniform sampler2D uTileMap;
-    uniform int tileXSize;
-    uniform int tileYSize;
-    uniform float time;
+    uniform int tileMapWidth;                   // width (in tiles) the map is
+    uniform int tileMapHeight;
+
+    uniform mediump int tileXSize;
+    uniform mediump int tileYSize;
+    uniform mediump int tileSetWidth;
+    uniform mediump int tileSetHeight;
 
     void main() {
+        int tileIndex = int(floor(texture2D(uTileMap,tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight))).r )); // force read from upper left corner, this should be 45
+        //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
+        //tileIndex = int(floor(texture2D(uTileMap,vec2(0.03,0.0)).r )); // force read from upper left corner, this should be 45
+        //tileIndex = int(floor(texture2D(uTileMap,vec2((1.0/500.0)*20.0,0.0)).r )); // force read from upper left corner, this should be 45
+        //tileIndex = 222;
 
-        //mapX = texture2D(tileMap,
-        gl_FragColor = texture2D(uTileMap, vUvs )+vec4(0,0,0,255);
-        //gl_FragColor = vec4(255,0,255,255);
+        // tiles are numbered from 1. a 0 means draw nothing
+        if(tileIndex != 0) {
+            tileIndex -= 1;
+            // now that we have the tile index, need to look up its pixels and draw it
 
-//      vec2 tileXY = vec2(floor(vUvs.x) / 512.0,floor(vUvs.y) / 512.0); // figure out which tile we´re in from the 3D coordinates
-//      float tex = texture2D(map,tileXY).r; // get tile´s texture ID
+            // convert 1D tile ID into 2D tile coordinates
+            int tileSetTileWidth = tileSetWidth/tileXSize;
+            int tileSetTileHeight = tileSetHeight/tileYSize;
+
+            int tileSetModulo = tileSetWidth;
+            float intermediateMod = mod(float(tileIndex),float(tileSetTileWidth));
+            float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
+            vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
+            //tile2DCoordinates = vec2(1.0,1.0);
+
+            // need to scale that by the percentage of the width of the tileSet a single tile is
+            vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
+
+            // give the x,y coordinate of a tile, map that to pixels in the tileSet
+            vec2 tileUV = (tileToSetRatio*tile2DCoordinates) +           // offset to beginning of this tile
+                (tileToSetRatio*fract(tileCoords));                 // pixels within the tile
+
+            //tileUV = vec2(0.1,0.1);
+            //vec2 UV = vec2(1.0/float(tileSetWidth) * (tex + fract(vUvs.x)), fract(vUvs.y)); // calculate UV within the texture|.
+            gl_FragColor = vec4(texture2D(uTileSet,tileUV)+vec4(0,0,0,255)); //fetch texel for fragment
+
+            gl_FragColor = vec4(texture2D(uTileSet,tileUV)); //fetch texel for fragment
+            gl_FragColor = vec4(texture2D(uTileSet,vec2(tileUV.x/50.0,0.0))); //fetch texel for fragment
+
+            gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV))); //fetch texel for fragment
+
+            //gl_FragColor = texture2D(uTileSet, vec2(0.0,0.0))+vec4(0,0,0,255);
+
+            //gl_FragColor = texture2D(uTileMap, vUvs );
+            //gl_FragColor = texture2D(uTileSet, vUvs )+vec4(0,0,0,255);
+            //gl_FragColor = vec4(0,0,tex,255);
+        }
+        else
+        {
+            gl_FragColor = vec4(0,0,0,0);
+        }
+
+        // debugging
+//      if(floor(tileCoords.x) == 0.0&& vUvs.y > 0.8) {
+//          gl_FragColor = vec4(${GREY});
+//      }
 //
-//      vec2 UV = vec2(0.0625 * (tex + fract(vUvs.x)), fract(vUvs.y)); // calculate UV within the texture|.
-//      // The factor 0.0625 is if you have 16 textures next to each other from left to right in your atlas, this entirely depends on your layout for it
+//      if(floor(tileCoords.x) == 1.0&& vUvs.y > 0.8) {
+//          gl_FragColor = vec4(${YELLOW});
+//      }
 //
-//      gl_FragColor = vec4(texture2D(uSampler2,UV)); //fetch texel for fragment
+//      if(floor(tileCoords.x) == 2.0&& vUvs.y > 0.8) {
+//          gl_FragColor = vec4(${GREEN});
+//      }
+//      if(floor(tileCoords.x) == 3.0&& vUvs.y > 0.8) {
+//          gl_FragColor = vec4(${BLUE});
+//
+//      }
+//      // upper left
+//      if(vUvs.x < 0.1 && vUvs.y < 0.1) {
+//
+//          //gl_FragColor = vec4(${RED});
+//          gl_FragColor = texture2D(uTileSet, vUvs)+vec4(0,0,0,255);
+//      }
 
+//      // lower left
+//      if(vUvs.x < 0.1 && vUvs.y > 0.9) {
+//          if(texture2D(uTileMap,vec2(0.0,0.0)).r == 45.0)  {
+//              gl_FragColor = vec4(${BLUE});
+//          }
+//          else
+//          {
+//              gl_FragColor = vec4(${GREEN});
+//          }
+//      }
+//
+//      // lower right
+//      if(vUvs.x > 0.9 && vUvs.y > 0.9) {
+//          gl_FragColor = vec4(${GREEN});
+//      }
     }`;
 
 
@@ -83,7 +174,7 @@ let intermediate = []
 
 tileMap.layers[0].data.forEach( (entry,index) =>
     {
-        intermediate.push(entry/10.0)
+        intermediate.push(entry)
         intermediate.push(0.0)
         intermediate.push(0.0)
         intermediate.push(1.0)
@@ -96,16 +187,49 @@ let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
 
 //console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
 
-const uniforms = {
-    uSampler2: PIXI.Texture.from(image),
-    //uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
-    uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
-    tileXSize: 32,
-    tileYSize: 32,
-    time: 0,
+const tileXSize = 32
+const tileYSize = 32
+const tileMapWidth = 100                                    // width
+const tileMapHeight = 100                                   // height
+const tileSetWidth = 544                                    // pixel width of the character set
+const tileSetHeight = 832                                   // pixel height of the character set
+const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the character set image is
+const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the atlas is
+
+let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
+let mapDisplayYPos = 0
+let mapDisplayWidth = 10                // how many tiles to display on the dest image
+let mapDisplayHeight = 10
+
+const CalcUniforms = () =>
+{
+    let tileMapXOffset = 0.0
+    let tileMapYOFfset = 0.0
+
+    let uniforms = {
+        uTileSet: PIXI.Texture.from(tileSet),
+        //uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
+        uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
+        tileXSize,
+        tileYSize,
+        tileMapWidth,
+        tileMapHeight,
+
+        tileSetWidth,
+        tileSetHeight,
+
+        mapDisplayWidth ,
+        mapDisplayHeight,
+
+        tileMapXOffset,
+        tileMapYOFfset,
+    }
+
+    console.log("uniforms",uniforms)
+    return uniforms
 }
 
-const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, uniforms)
+const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms())
 
 const TYPE = "MeshWithShader"
 const behavior = {
@@ -115,6 +239,7 @@ const behavior = {
           return
       }
       this.applyDisplayObjectProps(oldProps, newProps)
+      Object.assign(instance.shader.uniforms,CalcUniforms())
       instance.shader.uniforms.time = newProps.texture/5.0
       instance.position.set(newProps.x,newProps.y)
     }
