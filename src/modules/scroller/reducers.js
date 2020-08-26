@@ -5,6 +5,7 @@ import { GameStates } from 'modules/common/tick'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
+import { CreateTiledMapObject } from 'modules/common/tiledMapObject'
 import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
@@ -193,11 +194,8 @@ const CreateAttractObjects = () =>
 //      })
 
     // map, with custom renderer
-    objects.push(
-        {...CreateGameObject('Map',300,300,0,PixelsPerSecond(0),PixelsPerSecond(0),0,MapComponent,0,false),
-            //clipping:backgroundClipping
-        })
 
+    objects.push( CreateTiledMapObject(backgroundClipping) )
 
     objects.push(
         {

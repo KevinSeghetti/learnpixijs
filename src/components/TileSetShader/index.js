@@ -10,13 +10,14 @@ import tileMap from 'components/images/scroller/platform.json'
 //const app = new PIXI.Application()
 //document.body.appendChild(app.view)
 
-const size = 300
+const sizeX = 800/2
+const sizeY = 600/2
 const geometry = new PIXI.Geometry()
     .addAttribute('aVertexPosition', // the attribute name
-        [  -size, -size, // x, y
-            size, -size, // x, y
-            size,  size,
-           -size,  size
+        [  -sizeX, -sizeY, // x, y
+            sizeX, -sizeY, // x, y
+            sizeX,  sizeY,
+           -sizeX,  sizeY
         ], // x, y
         2) // the size of the attribute
     .addAttribute('aUvs', // the attribute name
@@ -41,13 +42,17 @@ const vertexSrc = `
     uniform float mapDisplayWidth;
     uniform float mapDisplayHeight;
 
+    uniform float tileMapXOffset;
+    uniform float tileMapYOffset;
+
+
     varying vec2 vUvs;
     varying vec2 tileCoords;
 
     void main() {
 
         vUvs = aUvs;
-        tileCoords = vec2(mapDisplayWidth,mapDisplayHeight)*aUvs;
+        tileCoords = (vec2(mapDisplayWidth,mapDisplayHeight)*aUvs)+vec2(tileMapXOffset,tileMapYOffset);
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
     }`;
@@ -77,7 +82,8 @@ const fragmentSrc = `
     uniform mediump int tileSetHeight;
 
     void main() {
-        int tileIndex = int(floor(texture2D(uTileMap,tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight))).r )); // force read from upper left corner, this should be 45
+        vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
+        int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
         //tileIndex = int(floor(texture2D(uTileMap,vec2(0.03,0.0)).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,vec2((1.0/500.0)*20.0,0.0)).r )); // force read from upper left corner, this should be 45
@@ -125,7 +131,7 @@ const fragmentSrc = `
             gl_FragColor = vec4(0,0,0,0);
         }
 
-        // debugging
+//      // debugging
 //      if(floor(tileCoords.x) == 0.0&& vUvs.y > 0.8) {
 //          gl_FragColor = vec4(${GREY});
 //      }
@@ -147,7 +153,7 @@ const fragmentSrc = `
 //          //gl_FragColor = vec4(${RED});
 //          gl_FragColor = texture2D(uTileSet, vUvs)+vec4(0,0,0,255);
 //      }
-
+//
 //      // lower left
 //      if(vUvs.x < 0.1 && vUvs.y > 0.9) {
 //          if(texture2D(uTileMap,vec2(0.0,0.0)).r == 45.0)  {
@@ -163,6 +169,7 @@ const fragmentSrc = `
 //      if(vUvs.x > 0.9 && vUvs.y > 0.9) {
 //          gl_FragColor = vec4(${GREEN});
 //      }
+
     }`;
 
 
@@ -196,19 +203,19 @@ const tileSetHeight = 832                                   // pixel height of t
 const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the character set image is
 const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the atlas is
 
-let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
+let mapDisplayXPos = 1                  // where the upper left corner of the map is scrolled to
 let mapDisplayYPos = 0
-let mapDisplayWidth = 10                // how many tiles to display on the dest image
-let mapDisplayHeight = 10
+let mapDisplayWidth = 40                // how many tiles to display on the dest image
+let mapDisplayHeight = 30
 
-const CalcUniforms = () =>
+
+const tileSetTexture = PIXI.Texture.from(tileSet,{ mipmap: PIXI.MIPMAP_MODES.off})
+//uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
+
+const CalcUniforms = (tileMapXOffset,tileMapYOffset) =>
 {
-    let tileMapXOffset = 0.0
-    let tileMapYOFfset = 0.0
-
     let uniforms = {
-        uTileSet: PIXI.Texture.from(tileSet),
-        //uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
+        uTileSet: tileSetTexture,
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
         tileYSize,
@@ -222,14 +229,14 @@ const CalcUniforms = () =>
         mapDisplayHeight,
 
         tileMapXOffset,
-        tileMapYOFfset,
+        tileMapYOffset,
     }
 
-    console.log("uniforms",uniforms)
+    //console.log("uniforms",uniforms)
     return uniforms
 }
 
-const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms())
+const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(2,30))
 
 const TYPE = "MeshWithShader"
 const behavior = {
@@ -239,8 +246,8 @@ const behavior = {
           return
       }
       this.applyDisplayObjectProps(oldProps, newProps)
-      Object.assign(instance.shader.uniforms,CalcUniforms())
-      instance.shader.uniforms.time = newProps.texture/5.0
+      Object.assign(instance.shader.uniforms,CalcUniforms(newProps.mapXOffset,newProps.mapYOffset))
+      //instance.shader.uniforms.tileMapXOffset = newProps.x-300
       instance.position.set(newProps.x,newProps.y)
     }
 }
