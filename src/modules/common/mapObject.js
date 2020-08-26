@@ -43,11 +43,11 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
     }
 
 
-    if(keys.minus &&  newTileMapXPer > 5)
+    if(keys.plus &&  newTileMapXPer > 5)
     {
         newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
     }
-    if(keys.plus &&  newTileMapXPer < 128)
+    if(keys.minus &&  newTileMapXPer < 128)
     {
         newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
     }

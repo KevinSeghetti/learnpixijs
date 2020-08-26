@@ -205,20 +205,20 @@ const CreateAttractObjects = () =>
             //clipping:backgroundClipping
         })
 
-    objects.push(
-        {
-            ...CreateGameObject(
-                'Start',
-                (scrollerTypes.stageOptions.width/2)-80,(scrollerTypes.stageOptions.height/2)+40,0,
-                0,0,0,
-                TextComponent,
-            ),
-            renderData:
-            {
-                text:"Press s To Start"
-            }
-        }
-    )
+//  objects.push(
+//      {
+//          ...CreateGameObject(
+//              'Start',
+//              (scrollerTypes.stageOptions.width/2)-80,(scrollerTypes.stageOptions.height/2)+40,0,
+//              0,0,0,
+//              TextComponent,
+//          ),
+//          renderData:
+//          {
+//              text:"Press s To Start"
+//          }
+//      }
+//  )
 
     // this object listens for button presses to start the game
     objects.push(CreateAttractObject() )

@@ -68,6 +68,8 @@ const vertexSrc = `
     void main() {
 
         vUvs = aUvs;
+
+        // use the vertex interpolation to generate our map coordinates
         tileCoords = (vec2(mapDisplayWidth,mapDisplayHeight)*aUvs)+vec2(tileMapXOffset,tileMapYOffset);
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
@@ -100,54 +102,45 @@ const fragmentSrc = `
     void main() {
         vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
         int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
-        //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
-        //tileIndex = int(floor(texture2D(uTileMap,vec2(0.00,0.0)).r )); // force read from upper left corner, this should be 45
-        //tileIndex = int(floor(texture2D(uTileMap,vec2((1.0/500.0)*20.0,0.0)).r )); // force read from upper left corner, this should be 45
+
+        //tileIndex = int(floor(texture2D(uTileMap,vec2(0.0,0.0)).r )); // force read from upper left corner for testing
         //tileIndex = 7;
 
-        // tiles are numbered from 1. a 0 means draw nothing
-        //if(tileIndex != 0) {
-            //tileIndex -= 1;
-            // now that we have the tile index, need to look up its pixels and draw it
+        // now that we have the tile index, need to look up its pixels and draw it
 
-            // convert 1D tile ID into 2D tile coordinates
-            int tileSetTileWidth = tileSetWidth/tileXSize;
-            int tileSetTileHeight = tileSetHeight/tileYSize;
+        // convert 1D tile ID into 2D tile coordinates
+        int tileSetTileWidth = tileSetWidth/tileXSize;
+        int tileSetTileHeight = tileSetHeight/tileYSize;
 
-            int tileSetModulo = tileSetWidth;
-            float intermediateMod = mod(float(tileIndex),float(tileSetTileWidth));
-            float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
-            vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
-            //tile2DCoordinates = vec2(1.0,0.0);
+        float intermediateMod = floor(mod(float(tileIndex),float(tileSetTileWidth)));
+        float intermediateInt = float(tileIndex/tileSetTileWidth);
+        vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
+        //tile2DCoordinates = vec2(1.0,0.0);            // force 2D coordinates for testing
 
-            // need to scale that by the percentage of the width of the tileSet a single tile is
-            vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
+        // need to scale that by the percentage of the width of the tileSet a single tile is
+        vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
 
-            // give the x,y coordinate of a tile, map that to pixels in the tileSet
-            vec2 tileUV = (tileToSetRatio*tile2DCoordinates) +           // offset to beginning of this tile
-                (tileToSetRatio*fract(tileCoords));                 // pixels within the tile
+        // give the x,y coordinate of a tile, map that to pixels in the tileSet
+        vec2 tileUV = (tileToSetRatio*tile2DCoordinates)        // offset to beginning of this tile
+            + (tileToSetRatio*fract(tileCoords))                // pixels within the tile
+        ;
 
-            //tileUV = vec2(0.1,0.1);
-            //vec2 UV = vec2(1.0/float(tileSetWidth) * (tex + fract(vUvs.x)), fract(vUvs.y)); // calculate UV within the texture|.
-            gl_FragColor = vec4(texture2D(uTileSet,tileUV)+vec4(0,0,0,255)); //fetch texel for fragment
+        //tileUV = vec2(0.1,0.1);           // force tileUV coords for testing
 
-            gl_FragColor = vec4(texture2D(uTileSet,tileUV)); //fetch texel for fragment
-            gl_FragColor = vec4(texture2D(uTileSet,vec2(tileUV.x/50.0,0.0))); //fetch texel for fragment
+        gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV))); //fetch texel for fragment
 
-            gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV))); //fetch texel for fragment
+        // shader done, the rest of this is for debugging
 
-            //gl_FragColor = texture2D(uTileSet, vec2(0.0,0.0))+vec4(0,0,0,255);
+        //gl_FragColor = vec4(texture2D(uTileSet,tileUV)+vec4(0,0,0,255)); //fetch texel for fragment disabling alpha
+        //gl_FragColor = vec4(texture2D(uTileSet,tileUV)); //fetch texel for fragment
+        //gl_FragColor = vec4(texture2D(uTileSet,vec2(tileUV.x/50.0,0.0))); //fetch texel for fragment
 
-            //gl_FragColor = texture2D(uTileMap, vUvs );
-            //gl_FragColor = texture2D(uTileSet, vUvs )+vec4(0,0,0,255);
-            //gl_FragColor = vec4(0,0,tex,255);
-//        }
-//      else
-//      {
-//          gl_FragColor = vec4(0,0,0,0);
-//      }
+        //gl_FragColor = texture2D(uTileSet, vec2(0.0,0.0))+vec4(0,0,0,255);
 
-        // debugging
+        //gl_FragColor = texture2D(uTileMap, vUvs );
+        //gl_FragColor = texture2D(uTileSet, vUvs )+vec4(0,0,0,255);
+        //gl_FragColor = vec4(0,0,tex,255);
+
 //      if(floor(tileCoords.x) == 0.0&& vUvs.y > 0.8) {
 //          gl_FragColor = vec4(${GREY});
 //      }
@@ -205,10 +198,6 @@ tileMap.layers[0].data.forEach( (entry,index) =>
 
 let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
 
-//console.log("mapArray",mapArray)
-
-//console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
-
 const tileXSize = 16
 const tileYSize = 16
 const tileSetWidth = 448                                    // pixel width of the character set
@@ -227,7 +216,7 @@ const CalcUniforms = () =>
     let tileMapYOffset = 0.0
 
     let uniforms = {
-        uTileSet: PIXI.Texture.from(tileSet),
+        uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
         //uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
@@ -266,7 +255,7 @@ const behavior = {
       instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
       instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
 
-      console.log("MapRendererBehavior",newProps)
+      //console.log("MapRendererBehavior",newProps)
 
     }
 }
