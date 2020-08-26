@@ -103,7 +103,7 @@ const fragmentSrc = `
         //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
         //tileIndex = int(floor(texture2D(uTileMap,vec2(0.00,0.0)).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,vec2((1.0/500.0)*20.0,0.0)).r )); // force read from upper left corner, this should be 45
-        //tileIndex = 222;
+        //tileIndex = 7;
 
         // tiles are numbered from 1. a 0 means draw nothing
         //if(tileIndex != 0) {
@@ -261,10 +261,12 @@ const behavior = {
       this.applyDisplayObjectProps(oldProps, newProps)
       //Object.assign(instance.shader.uniforms,CalcUniforms())
       instance.position.set(newProps.x,newProps.y)
-      instance.shader.uniforms.tileMapXOffset = newProps.tileMapXOffset;
-      instance.shader.uniforms.tileMapYOffset = newProps.tileMapYOffset;
+      instance.shader.uniforms.tileMapXOffset = Math.floor(newProps.tileMapXOffset);
+      instance.shader.uniforms.tileMapYOffset = Math.floor(newProps.tileMapYOffset);
+      instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
+      instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
 
-      //console.log("MapRendererBehavior",newProps)
+      console.log("MapRendererBehavior",newProps)
 
     }
 }

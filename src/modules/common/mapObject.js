@@ -22,14 +22,10 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
 
     let newTileMapXOffset = object.renderData.tileMapXOffset
     let newTileMapYOffset = object.renderData.tileMapYOffset
+    let newTileMapXPer = object.renderData.tileMapXPer
 
     const mapSpeed = PixelsPerSecond(25)
-    const deadTime = Seconds(2)
-
-    let lastGenerated = object.lastGenerated
-    let xDelta = 0
-    let mapState = state.globals.mapState
-    //console.log("mapstate",mapState)
+    const zoomSpeed = PixelsPerSecond(10)            // not really pixels
 
     // override clipping for now
     let movementClipping =
@@ -47,6 +43,14 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
     }
 
 
+    if(keys.minus &&  newTileMapXPer > 5)
+    {
+        newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
+    }
+    if(keys.plus &&  newTileMapXPer < 128)
+    {
+        newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
+    }
 
     if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
     {
@@ -66,16 +70,6 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
         newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
     }
 
-    if(keys.space && object.wallClock > object.lastGenerated+object.fireRate )
-    {
-        Callbacks.AddGameObject(object.bulletFactory(object.position.x,object.position.y-40) )
-        lastGenerated = object.wallClock
-    }
-    else
-    {
-        //lastGenerated = object.wallCLock - object.fireRate
-    }
-
     return {
         ...object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state) ,
         wallClock: object.wallClock + delta,
@@ -84,6 +78,7 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
             ...object.renderData,
             tileMapXOffset: newTileMapXOffset,
             tileMapYOffset: newTileMapYOffset,
+            tileMapXPer: newTileMapXPer,
         }
     }
 }
@@ -110,7 +105,7 @@ export const CreateMapObject = (x,y, renderComponent) =>
         {
             tileMapXOffset: 0,
             tileMapYOffset: 0,
-            tileMapXPer: 32,
+            tileMapXPer: 64,
         }
     }
 }

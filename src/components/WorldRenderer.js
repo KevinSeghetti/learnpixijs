@@ -58,6 +58,9 @@ const InnerObjects = ({state,tick,app}) =>
     let arrowUp = useKey('w')
     let arrowDown = useKey('s')
 
+    let minus = useKey('-')
+    let plus = useKey('=')
+
     let space = useKey(' ')
     let sKey = useKey('enter')
 
@@ -101,6 +104,16 @@ const InnerObjects = ({state,tick,app}) =>
     {
         keys['arrowDown'] = true
     }
+
+    if(plus)
+    {
+        keys['plus'] = true
+    }
+    if(minus)
+    {
+        keys['minus'] = true
+    }
+
 
     if(space)
     {
