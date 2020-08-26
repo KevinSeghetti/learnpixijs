@@ -196,8 +196,6 @@ let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
 
 const tileXSize = 32
 const tileYSize = 32
-const tileMapWidth = 100                                    // width
-const tileMapHeight = 100                                   // height
 const tileSetWidth = 544                                    // pixel width of the character set
 const tileSetHeight = 832                                   // pixel height of the character set
 const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the character set image is
@@ -219,8 +217,8 @@ const CalcUniforms = (tileMapXOffset,tileMapYOffset) =>
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
         tileYSize,
-        tileMapWidth,
-        tileMapHeight,
+        tileMapWidth: tileMap.width,
+        tileMapHeight: tileMap.height,
 
         tileSetWidth,
         tileSetHeight,
