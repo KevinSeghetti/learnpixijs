@@ -5,6 +5,7 @@ import { GameStates } from 'modules/common/tick'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
+import { CreateMapObject } from 'modules/common/mapObject'
 import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
 import { CreateEnemyObject } from 'modules/common/enemyObject'
@@ -181,10 +182,10 @@ const CreateAttractObjects = () =>
     const rotationSpeed = RadiansPerSecond((Math.PI*2)/4)
     const movementSpeed = PixelsPerSecond(100)
 
-    objects.push(
-        {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
-            clipping:backgroundClipping
-        })
+//  objects.push(
+//      {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
+//          clipping:backgroundClipping
+//      })
 
     // tile set
 //  objects.push(
@@ -193,8 +194,14 @@ const CreateAttractObjects = () =>
 //      })
 
     // map, with custom renderer
+// objects.push(
+//     {...CreateGameObject('Map',400,300,0,PixelsPerSecond(0),PixelsPerSecond(0),0,MapComponent,0,false),
+//         //clipping:backgroundClipping
+//     })
+
+
     objects.push(
-        {...CreateGameObject('Map',400,300,0,PixelsPerSecond(0),PixelsPerSecond(0),0,MapComponent,0,false),
+        {...CreateMapObject(400,300,MapComponent),
             //clipping:backgroundClipping
         })
 

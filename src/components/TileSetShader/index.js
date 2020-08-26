@@ -218,13 +218,13 @@ const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles
 
 let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
 let mapDisplayYPos = 0
-let mapDisplayWidth = 32                // how many tiles to display on the dest image
-let mapDisplayHeight = 24
+let mapDisplayWidth = 64                // how many tiles to display on the dest image
+let mapDisplayHeight = mapDisplayWidth*.75
 
 const CalcUniforms = () =>
 {
     let tileMapXOffset = 0.0
-    let tileMapYOFfset = 0.0
+    let tileMapYOffset = 0.0
 
     let uniforms = {
         uTileSet: PIXI.Texture.from(tileSet),
@@ -242,7 +242,7 @@ const CalcUniforms = () =>
         mapDisplayHeight,
 
         tileMapXOffset,
-        tileMapYOFfset,
+        tileMapYOffset,
     }
 
     console.log("uniforms",uniforms)
@@ -259,8 +259,13 @@ const behavior = {
           return
       }
       this.applyDisplayObjectProps(oldProps, newProps)
-      Object.assign(instance.shader.uniforms,CalcUniforms())
+      //Object.assign(instance.shader.uniforms,CalcUniforms())
       instance.position.set(newProps.x,newProps.y)
+      instance.shader.uniforms.tileMapXOffset = newProps.tileMapXOffset;
+      instance.shader.uniforms.tileMapYOffset = newProps.tileMapYOffset;
+
+      //console.log("MapRendererBehavior",newProps)
+
     }
 }
 

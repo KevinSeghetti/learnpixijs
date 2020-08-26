@@ -53,10 +53,13 @@ const InnerObjects = ({state,tick,app}) =>
     //console.log("InnerObjects ",state,tick,app)
 
     // kts TODO: make this array driven
-    let arrowLeft = useKey('arrowLeft')
-    let arrowRight = useKey('arrowRight')
+    let arrowLeft = useKey('a')
+    let arrowRight = useKey('d')
+    let arrowUp = useKey('w')
+    let arrowDown = useKey('s')
+
     let space = useKey(' ')
-    let sKey = useKey('s')
+    let sKey = useKey('enter')
 
     //console.log('InnerObjects',arrowLeft, arrowRight,space)
     let keys = {
@@ -90,6 +93,15 @@ const InnerObjects = ({state,tick,app}) =>
     {
         keys['arrowRight'] = true
     }
+    if(arrowUp)
+    {
+        keys['arrowUp'] = true
+    }
+    if(arrowDown)
+    {
+        keys['arrowDown'] = true
+    }
+
     if(space)
     {
         keys['space'] = true
@@ -126,6 +138,7 @@ const InnerObjects = ({state,tick,app}) =>
         {
             extra.scale = entry.scale
         }
+            //console.log("WorldRenderer: ",entry)
             return <entry.renderComponent
                     key={index}
                     x={entry.position.x}
