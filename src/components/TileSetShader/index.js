@@ -4,19 +4,37 @@ import React from "react"
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
 
-import tileSet from 'components/images/scroller/PlatformTilesets32x32.png'
-import tileMap from 'components/images/scroller/platform.json'
+//import tileSet from 'components/images/scroller/PlatformTilesets32x32.png'
+//import tileMap from 'components/images/scroller/platform.json'
+
+import tileSet from 'components/images/assignment/world-spritesheet.png'
+import rawTileMap from 'components/images/assignment/map.json'
+
+let tileMap =
+{
+    width:120,
+    height:70,
+    layers:
+    [
+        {
+            data: rawTileMap.flat()
+        }
+    ]
+}
+
+console.log("tilemap = ",tileMap)
 
 //const app = new PIXI.Application()
 //document.body.appendChild(app.view)
 
-const size = 300
+const sizeX = 800/2
+const sizeY = 600/2
 const geometry = new PIXI.Geometry()
     .addAttribute('aVertexPosition', // the attribute name
-        [  -size, -size, // x, y
-            size, -size, // x, y
-            size,  size,
-           -size,  size
+        [  -sizeX, -sizeY, // x, y
+            sizeX, -sizeY, // x, y
+            sizeX,  sizeY,
+           -sizeX,  sizeY
         ], // x, y
         2) // the size of the attribute
     .addAttribute('aUvs', // the attribute name
@@ -41,13 +59,16 @@ const vertexSrc = `
     uniform float mapDisplayWidth;
     uniform float mapDisplayHeight;
 
+    uniform float tileMapXOffset;
+    uniform float tileMapYOffset;
+
     varying vec2 vUvs;
     varying vec2 tileCoords;
 
     void main() {
 
         vUvs = aUvs;
-        tileCoords = vec2(mapDisplayWidth,mapDisplayHeight)*aUvs;
+        tileCoords = (vec2(mapDisplayWidth,mapDisplayHeight)*aUvs)+vec2(tileMapXOffset,tileMapYOffset);
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
     }`;
@@ -77,15 +98,16 @@ const fragmentSrc = `
     uniform mediump int tileSetHeight;
 
     void main() {
-        int tileIndex = int(floor(texture2D(uTileMap,tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight))).r )); // force read from upper left corner, this should be 45
+        vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
+        int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
-        //tileIndex = int(floor(texture2D(uTileMap,vec2(0.03,0.0)).r )); // force read from upper left corner, this should be 45
+        //tileIndex = int(floor(texture2D(uTileMap,vec2(0.00,0.0)).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,vec2((1.0/500.0)*20.0,0.0)).r )); // force read from upper left corner, this should be 45
         //tileIndex = 222;
 
         // tiles are numbered from 1. a 0 means draw nothing
-        if(tileIndex != 0) {
-            tileIndex -= 1;
+        //if(tileIndex != 0) {
+            //tileIndex -= 1;
             // now that we have the tile index, need to look up its pixels and draw it
 
             // convert 1D tile ID into 2D tile coordinates
@@ -96,7 +118,7 @@ const fragmentSrc = `
             float intermediateMod = mod(float(tileIndex),float(tileSetTileWidth));
             float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
             vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
-            //tile2DCoordinates = vec2(1.0,1.0);
+            //tile2DCoordinates = vec2(1.0,0.0);
 
             // need to scale that by the percentage of the width of the tileSet a single tile is
             vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
@@ -119,11 +141,11 @@ const fragmentSrc = `
             //gl_FragColor = texture2D(uTileMap, vUvs );
             //gl_FragColor = texture2D(uTileSet, vUvs )+vec4(0,0,0,255);
             //gl_FragColor = vec4(0,0,tex,255);
-        }
-        else
-        {
-            gl_FragColor = vec4(0,0,0,0);
-        }
+//        }
+//      else
+//      {
+//          gl_FragColor = vec4(0,0,0,0);
+//      }
 
         // debugging
 //      if(floor(tileCoords.x) == 0.0&& vUvs.y > 0.8) {
@@ -187,19 +209,17 @@ let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
 
 //console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
 
-const tileXSize = 32
-const tileYSize = 32
-const tileMapWidth = 100                                    // width
-const tileMapHeight = 100                                   // height
-const tileSetWidth = 544                                    // pixel width of the character set
-const tileSetHeight = 832                                   // pixel height of the character set
+const tileXSize = 16
+const tileYSize = 16
+const tileSetWidth = 448                                    // pixel width of the character set
+const tileSetHeight = 80                                   // pixel height of the character set
 const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the character set image is
 const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the atlas is
 
 let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
 let mapDisplayYPos = 0
-let mapDisplayWidth = 10                // how many tiles to display on the dest image
-let mapDisplayHeight = 10
+let mapDisplayWidth = 32                // how many tiles to display on the dest image
+let mapDisplayHeight = 24
 
 const CalcUniforms = () =>
 {
@@ -212,8 +232,8 @@ const CalcUniforms = () =>
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
         tileYSize,
-        tileMapWidth,
-        tileMapHeight,
+        tileMapWidth:tileMap.width,
+        tileMapHeight:tileMap.height,
 
         tileSetWidth,
         tileSetHeight,
@@ -240,7 +260,6 @@ const behavior = {
       }
       this.applyDisplayObjectProps(oldProps, newProps)
       Object.assign(instance.shader.uniforms,CalcUniforms())
-      instance.shader.uniforms.time = newProps.texture/5.0
       instance.position.set(newProps.x,newProps.y)
     }
 }

@@ -194,10 +194,9 @@ const CreateAttractObjects = () =>
 
     // map, with custom renderer
     objects.push(
-        {...CreateGameObject('Map',300,300,0,PixelsPerSecond(0),PixelsPerSecond(0),0,MapComponent,0,false),
+        {...CreateGameObject('Map',400,300,0,PixelsPerSecond(0),PixelsPerSecond(0),0,MapComponent,0,false),
             //clipping:backgroundClipping
         })
-
 
     objects.push(
         {
