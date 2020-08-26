@@ -22,7 +22,7 @@ let tileMap =
     ]
 }
 
-console.log("tilemap = ",tileMap)
+//console.log("tilemap = ",tileMap)
 
 //const app = new PIXI.Application()
 //document.body.appendChild(app.view)
@@ -75,12 +75,15 @@ const vertexSrc = `
 
     }`;
 
+//===============================================================================
+// since shaders are javascript strings, possible to create snippets of code
+// ouside and inject them when needed. Might explore this idea more.
+
 let RED   = "1.0,0.0,0.0,1.0"
 let GREEN = "0.0,1.0,0.0,1.0"
 let BLUE  = "0.0,0.0,1.0,1.0"
 let GREY  = "0.5,0.5,0.5,1.0"
 let YELLOW  = "1.0,1.0,0.5,1.0"
-
 
 const fragmentSrc = `
 
@@ -180,10 +183,9 @@ const fragmentSrc = `
 //      }
     }`;
 
+//===============================================================================
 
-console.log("tileMap",tileMap)
-// RGBA
-//let mapArray3 = new Float32Array(tileMap.layers[0].data.map( (entry,index) => entry ))
+//console.log("tileMap",tileMap)
 
 let intermediate = []
 
@@ -217,7 +219,6 @@ const CalcUniforms = () =>
 
     let uniforms = {
         uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
-        //uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
         tileYSize,
@@ -234,7 +235,7 @@ const CalcUniforms = () =>
         tileMapYOffset,
     }
 
-    console.log("uniforms",uniforms)
+    //console.log("uniforms",uniforms)
     return uniforms
 }
 
@@ -256,7 +257,6 @@ const behavior = {
       instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
 
       //console.log("MapRendererBehavior",newProps)
-
     }
 }
 
