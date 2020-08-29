@@ -7,7 +7,7 @@ import { CreateGameObject } from 'modules/common/gameObject'
 export const AttractTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
     //console.log("AttractTick",keys)
-    if(keys.s)
+    if(keys.enter)
     {
         Callbacks.StartNewGame()
     }

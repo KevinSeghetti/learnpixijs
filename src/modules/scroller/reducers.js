@@ -207,7 +207,7 @@ const CreateAttractObjects = () =>
             ),
             renderData:
             {
-                text:"Press s To Start"
+                text:"Press Enter To Start"
             }
         }
     )
