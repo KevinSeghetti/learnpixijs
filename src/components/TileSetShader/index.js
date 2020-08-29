@@ -10,14 +10,18 @@ import tileMap from 'components/images/scroller/platform.json'
 //const app = new PIXI.Application()
 //document.body.appendChild(app.view)
 
-const sizeX = 800/2
-const sizeY = 600/2
+// Size of destination buffer.
+const destSizeX = 800
+const destSizeY = 600
+
+
+const destAspectRatio = destSizeY / destSizeX
 const geometry = new PIXI.Geometry()
     .addAttribute('aVertexPosition', // the attribute name
-        [  -sizeX, -sizeY, // x, y
-            sizeX, -sizeY, // x, y
-            sizeX,  sizeY,
-           -sizeX,  sizeY
+        [  -destSizeX/2, -destSizeY/2, // x, y
+            destSizeX/2, -destSizeY/2, // x, y
+            destSizeX/2,  destSizeY/2,
+           -destSizeX/2,  destSizeY/2
         ], // x, y
         2) // the size of the attribute
     .addAttribute('aUvs', // the attribute name
@@ -45,17 +49,22 @@ const vertexSrc = `
     uniform float tileMapXOffset;
     uniform float tileMapYOffset;
 
-
     varying vec2 vUvs;
     varying vec2 tileCoords;
 
     void main() {
 
         vUvs = aUvs;
+
+        // use the vertex interpolation to generate our map coordinates
         tileCoords = (vec2(mapDisplayWidth,mapDisplayHeight)*aUvs)+vec2(tileMapXOffset,tileMapYOffset);
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
     }`;
+
+//===============================================================================
+// since shaders are javascript strings, possible to create snippets of code
+// ouside and inject them when needed. Might explore this idea more.
 
 let RED   = "1.0,0.0,0.0,1.0"
 let GREEN = "0.0,1.0,0.0,1.0"
@@ -65,7 +74,6 @@ let YELLOW  = "1.0,1.0,0.5,1.0"
 
 
 const fragmentSrc = `
-
     precision mediump float;
 
     varying vec2 vUvs;
@@ -172,13 +180,13 @@ const fragmentSrc = `
 
     }`;
 
+//===============================================================================
 
-console.log("tileMap",tileMap)
-// RGBA
-//let mapArray3 = new Float32Array(tileMap.layers[0].data.map( (entry,index) => entry ))
+//console.log("tileMap",tileMap)
 
 let intermediate = []
 
+// store map info in r channel
 tileMap.layers[0].data.forEach( (entry,index) =>
     {
         intermediate.push(entry)
@@ -194,26 +202,25 @@ let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
 
 //console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
 
-const tileXSize = 32
+const tileXSize = 32                                        // size of the tiles
 const tileYSize = 32
-const tileSetWidth = 544                                    // pixel width of the character set
-const tileSetHeight = 832                                   // pixel height of the character set
-const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the character set image is
-const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the atlas is
+const tileSetWidth = 544                                    // pixel width of the tile set
+const tileSetHeight = 832                                   // pixel height of the tile set
+const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the tile set image is
+const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the tile set image is
 
-let mapDisplayXPos = 1                  // where the upper left corner of the map is scrolled to
+let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
 let mapDisplayYPos = 0
 let mapDisplayWidth = 40                // how many tiles to display on the dest image
-let mapDisplayHeight = 30
+let mapDisplayHeight = mapDisplayWidth*destAspectRatio
 
-
-const tileSetTexture = PIXI.Texture.from(tileSet,{ mipmap: PIXI.MIPMAP_MODES.off})
-//uTileMap: PIXI.Texture.fromBuffer(mapArray,10,10),
-
-const CalcUniforms = (tileMapXOffset,tileMapYOffset) =>
+const CalcUniforms = () =>
 {
+    let tileMapXOffset = 0.0
+    let tileMapYOffset = 0.0
+
     let uniforms = {
-        uTileSet: tileSetTexture,
+        uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
         tileXSize,
         tileYSize,
@@ -234,7 +241,7 @@ const CalcUniforms = (tileMapXOffset,tileMapYOffset) =>
     return uniforms
 }
 
-const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(2,30))
+const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms())
 
 const TYPE = "MeshWithShader"
 const behavior = {
@@ -244,9 +251,14 @@ const behavior = {
           return
       }
       this.applyDisplayObjectProps(oldProps, newProps)
-      Object.assign(instance.shader.uniforms,CalcUniforms(newProps.mapXOffset,newProps.mapYOffset))
-      //instance.shader.uniforms.tileMapXOffset = newProps.x-300
+      //Object.assign(instance.shader.uniforms,CalcUniforms())
       instance.position.set(newProps.x,newProps.y)
+      instance.shader.uniforms.tileMapXOffset = Math.floor(newProps.tileMapXOffset);
+      instance.shader.uniforms.tileMapYOffset = Math.floor(newProps.tileMapYOffset);
+      instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
+      instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
+
+      //console.log("MapRendererBehavior",newProps)
     }
 }
 

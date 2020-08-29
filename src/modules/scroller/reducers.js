@@ -195,7 +195,7 @@ const CreateAttractObjects = () =>
 
     // map, with custom renderer
 
-    objects.push( CreateTiledMapObject(backgroundClipping) )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent) )
 
     objects.push(
         {

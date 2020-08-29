@@ -1,19 +1,5 @@
 // modules/common/tiledMapObject.js
 
-// kts smell
-import {
-    PlayerComponent,
-    BulletComponent,
-    EnemyComponent,
-    ExplosionComponent,
-    RockComponent,
-    TileSetComponent,
-    BackgroundComponent,
-    MapComponent,
-    TextComponent,
-} from "containers/scroller/Assets";
-
-import { types as scrollerTypes } from 'modules/scroller/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
 
@@ -24,23 +10,80 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
     //console.log("TiledMapObjectTick:",object,delta,clipping,keys,Callbacks,collisionList,state)
     //console.log("TiledMapTick:keys",keys)
 
+    let newTileMapXOffset = object.renderData.tileMapXOffset
+    let newTileMapYOffset = object.renderData.tileMapYOffset
+    let newTileMapXPer = object.renderData.tileMapXPer
+
+    const mapSpeed = PixelsPerSecond(25)
+    const zoomSpeed = PixelsPerSecond(10)            // not really pixels
+
+    // override clipping for now
+    let movementClipping =
+    {
+        min:
+        {
+            x: 0,
+            y: 0
+        },
+        max:
+        {
+            x: 120,
+            y: 70,
+        }
+    }
+
+
+    if(keys.plus &&  newTileMapXPer > 5)
+    {
+        newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
+    }
+    if(keys.minus &&  newTileMapXPer < 128)
+    {
+        newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
+    }
+
+    if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
+    {
+        newTileMapXOffset = newTileMapXOffset - (mapSpeed * delta)
+    }
+    if(keys.arrowRight &&  newTileMapXOffset < movementClipping.max.x)
+    {
+        newTileMapXOffset = newTileMapXOffset + (mapSpeed * delta)
+    }
+
+    if(keys.arrowUp &&  newTileMapYOffset > movementClipping.min.x)
+    {
+        newTileMapYOffset = newTileMapYOffset - (mapSpeed * delta)
+    }
+    if(keys.arrowDown &&  newTileMapYOffset < movementClipping.max.x)
+    {
+        newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
+    }
+
     return {
-        ...object,
+        ...object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state) ,
         wallClock: object.wallClock + delta,
+        renderData:
+        {
+            ...object.renderData,
+            tileMapXOffset: newTileMapXOffset,
+            tileMapYOffset: newTileMapYOffset,
+            tileMapXPer: newTileMapXPer,
+        }
     }
 }
 
 //===============================================================================
 
-export const CreateTiledMapObject = (backgroundClipping) =>
+export const CreateTiledMapObject = (x,y, renderComponent) =>
 {
+
     let object = CreateGameObject(
             'TiledMap',
-            (scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),0,
+            x,y,0,
             0,PixelsPerSecond(0),PixelsPerSecond(0),
-            MapComponent,
+            renderComponent,
         )
-
 
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort
@@ -49,11 +92,11 @@ export const CreateTiledMapObject = (backgroundClipping) =>
     return {
         ...object,
         wallClock: 0,
-        clipping:backgroundClipping,
         renderData:
         {
-            mapXOffset: 0,
-            mapYOffset: 30,
+            tileMapXOffset: 0,
+            tileMapYOffset: 0,
+            tileMapXPer: 64,
         }
     }
 }
