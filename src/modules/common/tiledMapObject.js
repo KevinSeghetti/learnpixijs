@@ -1,4 +1,4 @@
-// modules/common/map.js
+// modules/common/tiledMapObject.js
 
 import { CreateGameObject } from 'modules/common/gameObject'
 import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
@@ -85,7 +85,7 @@ export const MapTick = (object,delta,clipping,keys,Callbacks,collisionList,state
 
 //===============================================================================
 
-export const CreateMapObject = (x,y, renderComponent) =>
+export const CreateTiledMapObject = (x,y, renderComponent) =>
 {
 
     let object = CreateGameObject(
