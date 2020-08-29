@@ -103,6 +103,12 @@ const fragmentSrc = `
     uniform mediump int tileSetHeight;
 
     void main() {
+
+        vec2 nudge = vec2(
+            (1.0/float(tileSetWidth))/2.0,
+            (1.0/float(tileSetHeight))/2.0
+        );     // calculate 1/2 of a pixel width
+
         vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
         int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
 
@@ -130,7 +136,7 @@ const fragmentSrc = `
 
         //tileUV = vec2(0.1,0.1);           // force tileUV coords for testing
 
-        gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV))); //fetch texel for fragment
+        gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV)+nudge)); //fetch texel for fragment
 
         // shader done, the rest of this is for debugging
 
