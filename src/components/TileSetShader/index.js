@@ -103,6 +103,7 @@ const fragmentSrc = `
     uniform mediump int tileSetHeight;
 
     void main() {
+         vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
 
         vec2 nudge = vec2(
             (1.0/float(tileSetWidth))/2.0,
@@ -129,9 +130,13 @@ const fragmentSrc = `
         // need to scale that by the percentage of the width of the tileSet a single tile is
         vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
 
-        // give the x,y coordinate of a tile, map that to pixels in the tileSet
+        // given the x,y coordinate of a tile, map that to pixels in the tileSet
+        vec2 fractTileCoords = fract(tileCoords);
+        vec2 pixelCoordinates = floor(fractTileCoords*tileSize);
+        vec2 fractCoords = (pixelCoordinates/tileSize)*tileToSetRatio;
+
         vec2 tileUV = (tileToSetRatio*tile2DCoordinates)        // offset to beginning of this tile
-            + (tileToSetRatio*fract(tileCoords))                // pixels within the tile
+            + fractCoords                                       // pixels within the tile
         ;
 
         //tileUV = vec2(0.1,0.1);           // force tileUV coords for testing
