@@ -223,6 +223,8 @@ const CalcUniforms = () =>
     let tileMapXOffset = 0.0
     let tileMapYOffset = 0.0
 
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
     let uniforms = {
         uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
         uTileMap: PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height),
@@ -245,6 +247,7 @@ const CalcUniforms = () =>
     return uniforms
 }
 
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms())
 
 const TYPE = "MeshWithShader"
