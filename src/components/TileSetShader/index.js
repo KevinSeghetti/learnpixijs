@@ -97,13 +97,15 @@ const fragmentSrc = `
     uniform int tileMapWidth;                   // width (in tiles) the map is
     uniform int tileMapHeight;
 
-    uniform mediump int tileXSize;
+    //uniform mediump int tileXSize;
     uniform mediump int tileYSize;
     uniform mediump int tileSetWidth;
     uniform mediump int tileSetHeight;
 
     void main() {
-         vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
+        int tileXSize = 16;             // kts kludge around bug where passing in tileXSize in a uniform behaves differently
+
+        vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
 
         vec2 nudge = vec2(
             (1.0/float(tileSetWidth))/2.0,

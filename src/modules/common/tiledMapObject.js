@@ -105,7 +105,7 @@ export const CreateTiledMapObject = (x,y, renderComponent) =>
         {
             tileMapXOffset: 0,
             tileMapYOffset: 0,
-            tileMapXPer: 10,
+            tileMapXPer: 64,
         }
     }
 }
