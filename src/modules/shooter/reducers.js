@@ -223,7 +223,7 @@ const CreateAttractObjects = () =>
             ),
             renderData:
             {
-                text:"Press Enter To Start"
+                text:"  Press enter to start\na & d to move left/right\n   Space bar to fire"
             }
         }
     )
