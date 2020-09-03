@@ -97,14 +97,12 @@ const fragmentSrc = `
     uniform int tileMapWidth;                   // width (in tiles) the map is
     uniform int tileMapHeight;
 
-    //uniform mediump int tileXSize;
+    uniform mediump int tileXSize;
     uniform mediump int tileYSize;
     uniform mediump int tileSetWidth;
     uniform mediump int tileSetHeight;
 
     void main() {
-        int tileXSize = 16;             // kts kludge around bug where passing in tileXSize in a uniform behaves differently
-
         vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
 
         vec2 nudge = vec2(
@@ -124,9 +122,13 @@ const fragmentSrc = `
         int tileSetTileWidth = tileSetWidth/tileXSize;
         int tileSetTileHeight = tileSetHeight/tileYSize;
 
-        float intermediateMod = floor(mod(float(tileIndex),float(tileSetTileWidth)));
+        // mod by hand, since int mod doesn't exist in ES 2.0, and float mod will bungle this
+        // modulo is // test = x-(y*(x/y));
+        int intermediateMod = tileIndex-(tileSetTileWidth*(tileIndex/tileSetTileWidth));
+
+        //float intermediateMod = floor(mod(float(tileIndex),float(tileSetTileWidth)));
         float intermediateInt = float(tileIndex/tileSetTileWidth);
-        vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
+        vec2 tile2DCoordinates = vec2(float(intermediateMod),intermediateInt);
         //tile2DCoordinates = vec2(1.0,0.0);            // force 2D coordinates for testing
 
         // need to scale that by the percentage of the width of the tileSet a single tile is
