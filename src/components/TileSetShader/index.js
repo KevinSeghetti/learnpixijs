@@ -11,17 +11,16 @@ import tileMap from 'components/images/scroller/platform.json'
 //document.body.appendChild(app.view)
 
 // Size of destination buffer.
-const destSizeX = 800
-const destSizeY = 600
-
-
+const destSizeX = 800/2
+const destSizeY = 600/2
 const destAspectRatio = destSizeY / destSizeX
+
 const geometry = new PIXI.Geometry()
     .addAttribute('aVertexPosition', // the attribute name
-        [  -destSizeX/2, -destSizeY/2, // x, y
-            destSizeX/2, -destSizeY/2, // x, y
-            destSizeX/2,  destSizeY/2,
-           -destSizeX/2,  destSizeY/2
+        [  -destSizeX, -destSizeY, // x, y
+            destSizeX, -destSizeY, // x, y
+            destSizeX,  destSizeY,
+           -destSizeX,  destSizeY
         ], // x, y
         2) // the size of the attribute
     .addAttribute('aUvs', // the attribute name
@@ -90,6 +89,7 @@ const fragmentSrc = `
     uniform mediump int tileSetHeight;
 
     void main() {
+        vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
         vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
         int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
@@ -107,17 +107,24 @@ const fragmentSrc = `
             int tileSetTileHeight = tileSetHeight/tileYSize;
 
             int tileSetModulo = tileSetWidth;
-            float intermediateMod = mod(float(tileIndex),float(tileSetTileWidth));
+            // mod by hand, since int mod doesn't exist in ES 2.0, and float mod will bungle this
+            // modulo is // test = x-(y*(x/y));
+            int intermediateMod = tileIndex-(tileSetTileWidth*(tileIndex/tileSetTileWidth));
             float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
-            vec2 tile2DCoordinates = vec2(intermediateMod,intermediateInt);
+            vec2 tile2DCoordinates = vec2(float(intermediateMod),intermediateInt);
             //tile2DCoordinates = vec2(1.0,1.0);
 
             // need to scale that by the percentage of the width of the tileSet a single tile is
             vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
 
-            // give the x,y coordinate of a tile, map that to pixels in the tileSet
-            vec2 tileUV = (tileToSetRatio*tile2DCoordinates) +           // offset to beginning of this tile
-                (tileToSetRatio*fract(tileCoords));                 // pixels within the tile
+            // given the x,y coordinate of a tile, map that to pixels in the tileSet
+        vec2 fractTileCoords = fract(tileCoords);
+        vec2 pixelCoordinates = floor(fractTileCoords*tileSize);
+        vec2 fractCoords = (pixelCoordinates/tileSize)*tileToSetRatio;
+
+        vec2 tileUV = (tileToSetRatio*tile2DCoordinates)        // offset to beginning of this tile
+            + fractCoords                                       // pixels within the tile
+        ;
 
             //tileUV = vec2(0.1,0.1);
             //vec2 UV = vec2(1.0/float(tileSetWidth) * (tex + fract(vUvs.x)), fract(vUvs.y)); // calculate UV within the texture|.
