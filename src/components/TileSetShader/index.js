@@ -165,7 +165,7 @@ const fragmentSrc = `
 
 //===============================================================================
 
-const CalcUniforms = (tileSet,tileSetWidth,tileSetHeight,tileMap,destAspectRatio) =>
+const CalcUniforms = (tileSet,tileSetSize,tileMap,destAspectRatio) =>
 {
     let tileMapXOffset = 0.0
     let tileMapYOffset = 0.0
@@ -173,8 +173,8 @@ const CalcUniforms = (tileSet,tileSetWidth,tileSetHeight,tileMap,destAspectRatio
     const tileXSize = tileMap.tilewidth                         // size of the tiles
     const tileYSize = tileMap.tileheight
 
-    const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the tile set image is
-    const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the tile set image is
+    const tileSetTileWidth  = tileSetSize.x/tileXSize             // number of tiles wide the tile set image is
+    const tileSetTileHeight = tileSetSize.y/tileYSize             // number of tiles high the tile set image is
 
     let intermediate = []
 
@@ -205,8 +205,8 @@ const CalcUniforms = (tileSet,tileSetWidth,tileSetHeight,tileMap,destAspectRatio
         tileMapWidth: tileMap.width,
         tileMapHeight: tileMap.height,
 
-        tileSetWidth,
-        tileSetHeight,
+        tileSetWidth:tileSetSize.x,
+        tileSetHeight:tileSetSize.y,
 
         mapDisplayWidth ,
         mapDisplayHeight,
@@ -219,21 +219,20 @@ const CalcUniforms = (tileSet,tileSetWidth,tileSetHeight,tileMap,destAspectRatio
     return uniforms
 }
 
-const ConstructBehavior = (tileSet,tileSetWidth,tileSetHeight,tileMap)  =>
+const ConstructBehavior = (tileSet,tileSetSize,tileMap,destSize)  =>
 {
     // Size of destination buffer.
-    const destSizeX = 800/2
-    const destSizeY = 600/2
+    const {x:destSizeX,y:destSizeY} = destSize
     const destAspectRatio = destSizeY / destSizeX
 
-    const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(tileSet,tileSetWidth,tileSetHeight,tileMap, destAspectRatio))
+    const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(tileSet,tileSetSize,tileMap, destAspectRatio))
 
     const geometry = new PIXI.Geometry()
         .addAttribute('aVertexPosition', // the attribute name
-            [  -destSizeX, -destSizeY, // x, y
-                destSizeX, -destSizeY, // x, y
-                destSizeX,  destSizeY,
-               -destSizeX,  destSizeY
+            [  -destSizeX/2, -destSizeY/2, // x, y
+                destSizeX/2, -destSizeY/2, // x, y
+                destSizeX/2,  destSizeY/2,
+               -destSizeX/2,  destSizeY/2
             ], // x, y
             2) // the size of the attribute
         .addAttribute('aUvs', // the attribute name
@@ -270,13 +269,13 @@ const ConstructBehavior = (tileSet,tileSetWidth,tileSetHeight,tileMap)  =>
 // so I can add the game data. (kts smell: unsure if adding gameData to render components
 // is a good design, or if we should move that data up a level)
 
-export const ConstructTileSetShaderComponent = (tileSet, tileSetWidth,tileSetHeight,tileMap) =>
+export const ConstructTileSetShaderComponent = (tileSet, tileSetSize,tileMap,destSize) =>
 {
     const TYPE = "MeshWithShader"
 
     let ShaderComponent = (props) =>
     {
-        const Shader = CustomPIXIComponent(ConstructBehavior(tileSet,tileSetWidth,tileSetHeight,tileMap), TYPE)
+        const Shader = CustomPIXIComponent(ConstructBehavior(tileSet,tileSetSize,tileMap,destSize), TYPE)
         return <Shader {...props} />
     }
 
