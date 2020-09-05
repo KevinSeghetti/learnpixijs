@@ -1,6 +1,8 @@
 // tile set shader. Given a tile set, and a 2D map, render the tiles
 
-import React from "react"
+import React,{useState} from "react"
+import PropTypes from "prop-types";
+
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
 
@@ -191,22 +193,6 @@ const fragmentSrc = `
 
 //console.log("tileMap",tileMap)
 
-let intermediate = []
-
-// store map info in r channel
-tileMap.layers[0].data.forEach( (entry,index) =>
-    {
-        intermediate.push(entry)
-        intermediate.push(0.0)
-        intermediate.push(0.0)
-        intermediate.push(1.0)
-    }
-)
-
-let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
-
-//console.log("mapArray",mapArray)
-
 //console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
 
 const tileXSize = 32                                        // size of the tiles
@@ -221,10 +207,25 @@ let mapDisplayYPos = 0
 let mapDisplayWidth = 40                // how many tiles to display on the dest image
 let mapDisplayHeight = mapDisplayWidth*destAspectRatio
 
-const CalcUniforms = () =>
+const CalcUniforms = (tileSet,tileMap) =>
 {
     let tileMapXOffset = 0.0
     let tileMapYOffset = 0.0
+
+    let intermediate = []
+
+    // store map info in r channel
+    tileMap.layers[0].data.forEach( (entry,index) =>
+        {
+            intermediate.push(entry)
+            intermediate.push(0.0)
+            intermediate.push(0.0)
+            intermediate.push(1.0)
+        }
+    )
+
+    let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
+    //console.log("mapArray",mapArray)
 
     let uniforms = {
         uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
@@ -248,34 +249,47 @@ const CalcUniforms = () =>
     return uniforms
 }
 
-const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms())
+const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(tileSet,tileMap))
 
 const TYPE = "MeshWithShader"
-const behavior = {
-  customDisplayObject: props => new PIXI.Mesh(geometry, shader),
-    customApplyProps: function(instance, oldProps, newProps) {
-      if(oldProps === undefined) {
-          return
-      }
-      this.applyDisplayObjectProps(oldProps, newProps)
-      //Object.assign(instance.shader.uniforms,CalcUniforms())
-      instance.position.set(newProps.x,newProps.y)
-      instance.shader.uniforms.tileMapXOffset = Math.floor(newProps.tileMapXOffset);
-      instance.shader.uniforms.tileMapYOffset = Math.floor(newProps.tileMapYOffset);
-      instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
-      instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
 
-      //console.log("MapRendererBehavior",newProps)
+const ConstructBehavior = ()  =>
+{
+    return{
+      customDisplayObject: props => new PIXI.Mesh(geometry, shader),
+        customApplyProps: function(instance, oldProps, newProps) {
+          if(oldProps === undefined) {
+              return
+          }
+          this.applyDisplayObjectProps(oldProps, newProps)
+          //Object.assign(instance.shader.uniforms,CalcUniforms(tileSet,tileMap))
+          instance.position.set(newProps.x,newProps.y)
+          instance.shader.uniforms.tileMapXOffset = Math.floor(newProps.tileMapXOffset);
+          instance.shader.uniforms.tileMapYOffset = Math.floor(newProps.tileMapYOffset);
+          instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
+          instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
+
+          //console.log("MapRendererBehavior",newProps)
+        }
     }
+
 }
 
-let Shader = CustomPIXIComponent(behavior, TYPE)
+//let Shader = CustomPIXIComponent(behavior, TYPE)
 
 // unclear to me why the Shader is coming back as a string. Wrapping it in this component
 // so I can add the game data. (kts smell: unsure if adding gameData to render components
 // is a good design, or if we should move that data up a level)
 let ShaderComponent = (props) =>
 {
+    let [Shader,setShader] = useState(
+        () =>
+        {
+
+            return CustomPIXIComponent(ConstructBehavior(), TYPE)
+        }
+    )
+
     return <Shader {...props} />
 }
 
@@ -283,6 +297,20 @@ ShaderComponent.gameData = {
     size : { x:10,y:10},            // kts need to read this from texture?
     frames: 200          // kts temp
 }
+
+
+ShaderComponent.propTypes =
+{
+  tileSet: PropTypes.object.isRequired,
+  tileMap: PropTypes.object.isRequired,
+
+};
+ShaderComponent.defaultProps =
+{
+  //as: Sprite,
+  //texture: 0,
+};
+
 
 export default ShaderComponent
 
