@@ -1,7 +1,7 @@
 // modules/common/tiledMapObject.js
 
 import { CreateGameObject } from 'modules/common/gameObject'
-import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
+import { PixelsPerSecond } from 'modules/common/time'
 
 //===============================================================================
 
@@ -14,8 +14,8 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
     let newTileMapYOffset = object.renderData.tileMapYOffset
     let newTileMapXPer = object.renderData.tileMapXPer
 
-    const mapSpeed = PixelsPerSecond(25)
-    const zoomSpeed = PixelsPerSecond(10)            // not really pixels
+    const mapSpeed = object.mapSpeed
+    const zoomSpeed = object.zoomSpeed         // not really pixels
 
     // override clipping for now
     let movementClipping =
@@ -78,12 +78,17 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
 export const CreateTiledMapObject = (x,y, renderComponent) =>
 {
 
-    let object = CreateGameObject(
+    let object = {
+        ...CreateGameObject(
             'TiledMap',
             x,y,0,
             0,PixelsPerSecond(0),PixelsPerSecond(0),
             renderComponent,
-        )
+        ),
+        mapSpeed : PixelsPerSecond(25),
+        zoomSpeed: PixelsPerSecond(10),            // not really pixels
+
+    }
 
     object.baseTick = object.tick       // kts experiment with manual inheritance
                                         // if we go this way, this needs to become a linked list of some sort

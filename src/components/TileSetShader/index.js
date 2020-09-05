@@ -1,7 +1,6 @@
 // tile set shader. Given a tile set, and a 2D map, render the tiles
 
-import React,{useState} from "react"
-import PropTypes from "prop-types";
+import React from "react"
 
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
@@ -66,6 +65,12 @@ const fragmentSrc = `
 
     void main() {
         vec2 tileSize = vec2(float(tileXSize),float(tileYSize));
+
+        vec2 nudge = vec2(
+            (1.0/float(tileSetWidth))/2.0,
+            (1.0/float(tileSetHeight))/2.0
+        );     // calculate 1/2 of a pixel width
+
         vec2 tileMapCoordinates = tileCoords*vec2(1.0/float(tileMapWidth),1.0/float(tileMapHeight));
         int tileIndex = int(floor(texture2D(uTileMap,tileMapCoordinates).r )); // force read from upper left corner, this should be 45
         //tileIndex = int(floor(texture2D(uTileMap,tileCoords).r)); // get tile´s texture ID
@@ -86,7 +91,8 @@ const fragmentSrc = `
             // mod by hand, since int mod doesn't exist in ES 2.0, and float mod will bungle this
             // modulo is // test = x-(y*(x/y));
             int intermediateMod = tileIndex-(tileSetTileWidth*(tileIndex/tileSetTileWidth));
-            float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
+            //float intermediateInt = floor(float(tileIndex)/float(tileSetTileWidth));
+            float intermediateInt = float(tileIndex/tileSetTileWidth);
             vec2 tile2DCoordinates = vec2(float(intermediateMod),intermediateInt);
             //tile2DCoordinates = vec2(1.0,1.0);
 
@@ -94,22 +100,23 @@ const fragmentSrc = `
             vec2 tileToSetRatio = vec2(float(tileXSize)/float(tileSetWidth),float(tileYSize)/float(tileSetHeight));
 
             // given the x,y coordinate of a tile, map that to pixels in the tileSet
-        vec2 fractTileCoords = fract(tileCoords);
-        vec2 pixelCoordinates = floor(fractTileCoords*tileSize);
-        vec2 fractCoords = (pixelCoordinates/tileSize)*tileToSetRatio;
+            vec2 fractTileCoords = fract(tileCoords);
+            vec2 pixelCoordinates = floor(fractTileCoords*tileSize);
+            vec2 fractCoords = (pixelCoordinates/tileSize)*tileToSetRatio;
 
-        vec2 tileUV = (tileToSetRatio*tile2DCoordinates)        // offset to beginning of this tile
-            + fractCoords                                       // pixels within the tile
-        ;
+            vec2 tileUV = (tileToSetRatio*tile2DCoordinates)        // offset to beginning of this tile
+                + fractCoords                                       // pixels within the tile
+            ;
 
             //tileUV = vec2(0.1,0.1);
             //vec2 UV = vec2(1.0/float(tileSetWidth) * (tex + fract(vUvs.x)), fract(vUvs.y)); // calculate UV within the texture|.
-            gl_FragColor = vec4(texture2D(uTileSet,tileUV)+vec4(0,0,0,255)); //fetch texel for fragment
 
-            gl_FragColor = vec4(texture2D(uTileSet,tileUV)); //fetch texel for fragment
-            gl_FragColor = vec4(texture2D(uTileSet,vec2(tileUV.x/50.0,0.0))); //fetch texel for fragment
+            gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV)+nudge)); //fetch texel for fragment
 
-            gl_FragColor = vec4(texture2D(uTileSet,fract(tileUV))); //fetch texel for fragment
+            //gl_FragColor = vec4(texture2D(uTileSet,tileUV)+vec4(0,0,0,255)); //fetch texel for fragment disabling alpha
+
+            //gl_FragColor = vec4(texture2D(uTileSet,tileUV)); //fetch texel for fragment
+            //gl_FragColor = vec4(texture2D(uTileSet,vec2(tileUV.x/50.0,0.0))); //fetch texel for fragment
 
             //gl_FragColor = texture2D(uTileSet, vec2(0.0,0.0))+vec4(0,0,0,255);
 
@@ -173,9 +180,6 @@ const CalcUniforms = (tileSet,tileSetSize,tileMap,destAspectRatio) =>
     const tileXSize = tileMap.tilewidth                         // size of the tiles
     const tileYSize = tileMap.tileheight
 
-    const tileSetTileWidth  = tileSetSize.x/tileXSize             // number of tiles wide the tile set image is
-    const tileSetTileHeight = tileSetSize.y/tileYSize             // number of tiles high the tile set image is
-
     let intermediate = []
 
     // store map info in r channel
@@ -192,8 +196,6 @@ const CalcUniforms = (tileSet,tileSetSize,tileMap,destAspectRatio) =>
     //console.log("mapArray",mapArray)
 
     // values that may vary as the app runs
-    let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
-    let mapDisplayYPos = 0
     let mapDisplayWidth = 40                // how many tiles to display on the dest image
     let mapDisplayHeight = mapDisplayWidth*destAspectRatio
 

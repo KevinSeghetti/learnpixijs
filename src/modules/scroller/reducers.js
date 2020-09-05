@@ -19,9 +19,9 @@ import {
     EnemyComponent,
     ExplosionComponent,
     RockComponent,
-    TileSetComponent,
     BackgroundComponent,
     MapComponent,
+    Map2Component,
     TextComponent,
 } from "containers/scroller/Assets";
 
@@ -179,9 +179,6 @@ const CreateAttractObjects = () =>
 {
     let objects = []
 
-    const rotationSpeed = RadiansPerSecond((Math.PI*2)/4)
-    const movementSpeed = PixelsPerSecond(100)
-
     objects.push(
         {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
             clipping:backgroundClipping
@@ -195,6 +192,12 @@ const CreateAttractObjects = () =>
 
     // map, with custom renderer
 
+    objects.push(
+        {
+            ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component),
+            mapSpeed : PixelsPerSecond(10),
+        }
+    )
     objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent) )
 
     objects.push(
