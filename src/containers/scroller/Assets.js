@@ -8,7 +8,10 @@ import explosionImage   from "components/images/explosion.png";
 import backgroundImage  from "components/images/background.png";
 import rockImage        from "components/images/rock.png";
 import Text             from "components/Text";
-import TileSetShader    from "components/TileSetShader"
+import tileSet          from 'components/images/scroller/PlatformTilesets32x32.png'
+import tileMap          from 'components/images/scroller/platform.json'
+
+import {ConstructTileSetShaderComponent}    from "components/TileSetShader"
 
 import map from 'components/images/scroller/platform.json'
 
@@ -20,8 +23,10 @@ export const BulletComponent      = PixiComponentFactory(bulletImage     ,12,20)
 export const EnemyComponent       = PixiComponentFactory(enemyImage      ,31,28)
 
 //export const TileSetShaderComponent =    TileSetShader
-export const MapComponent =    TileSetShader
-console.log("Map!!",map)
+const tileSetWidth = 544                                    // pixel width of the tile set
+const tileSetHeight = 832                                   // pixel height of the tile set
+export const MapComponent =    ConstructTileSetShaderComponent(tileSet,tileSetWidth,tileSetHeight,tileMap)
+//console.log("Map!!",map)
 
 
 //export const MapComponent = {}

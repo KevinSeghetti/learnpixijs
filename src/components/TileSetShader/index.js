@@ -6,33 +6,7 @@ import PropTypes from "prop-types";
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
 
-import tileSet from 'components/images/scroller/PlatformTilesets32x32.png'
-import tileMap from 'components/images/scroller/platform.json'
-
-//const app = new PIXI.Application()
-//document.body.appendChild(app.view)
-
-// Size of destination buffer.
-const destSizeX = 800/2
-const destSizeY = 600/2
-const destAspectRatio = destSizeY / destSizeX
-
-const geometry = new PIXI.Geometry()
-    .addAttribute('aVertexPosition', // the attribute name
-        [  -destSizeX, -destSizeY, // x, y
-            destSizeX, -destSizeY, // x, y
-            destSizeX,  destSizeY,
-           -destSizeX,  destSizeY
-        ], // x, y
-        2) // the size of the attribute
-    .addAttribute('aUvs', // the attribute name
-        [   0, 0, // u, v
-            1, 0, // u, v
-            1, 1,
-            0, 1
-        ], // u, v
-        2) // the size of the attribute
-    .addIndex([0, 1, 2, 0, 2, 3])
+//===============================================================================
 
 const vertexSrc = `
 
@@ -191,26 +165,16 @@ const fragmentSrc = `
 
 //===============================================================================
 
-//console.log("tileMap",tileMap)
-
-//console.log("texture", PIXI.Texture.fromBuffer(mapArray,tileMap.width,tileMap.height))
-
-const tileXSize = 32                                        // size of the tiles
-const tileYSize = 32
-const tileSetWidth = 544                                    // pixel width of the tile set
-const tileSetHeight = 832                                   // pixel height of the tile set
-const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the tile set image is
-const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the tile set image is
-
-let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
-let mapDisplayYPos = 0
-let mapDisplayWidth = 40                // how many tiles to display on the dest image
-let mapDisplayHeight = mapDisplayWidth*destAspectRatio
-
-const CalcUniforms = (tileSet,tileMap) =>
+const CalcUniforms = (tileSet,tileSetWidth,tileSetHeight,tileMap,destAspectRatio) =>
 {
     let tileMapXOffset = 0.0
     let tileMapYOffset = 0.0
+
+    const tileXSize = tileMap.tilewidth                         // size of the tiles
+    const tileYSize = tileMap.tileheight
+
+    const tileSetTileWidth  = tileSetWidth/tileXSize             // number of tiles wide the tile set image is
+    const tileSetTileHeight = tileSetHeight/tileYSize             // number of tiles high the tile set image is
 
     let intermediate = []
 
@@ -226,6 +190,12 @@ const CalcUniforms = (tileSet,tileMap) =>
 
     let mapArray = new Float32Array(intermediate.map( (entry,index) => entry ))
     //console.log("mapArray",mapArray)
+
+    // values that may vary as the app runs
+    let mapDisplayXPos = 0                  // where the upper left corner of the map is scrolled to
+    let mapDisplayYPos = 0
+    let mapDisplayWidth = 40                // how many tiles to display on the dest image
+    let mapDisplayHeight = mapDisplayWidth*destAspectRatio
 
     let uniforms = {
         uTileSet: PIXI.Texture.from(tileSet,{ mipmap:false,premultiplyAlpha:false,}),
@@ -249,12 +219,32 @@ const CalcUniforms = (tileSet,tileMap) =>
     return uniforms
 }
 
-const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(tileSet,tileMap))
-
-const TYPE = "MeshWithShader"
-
-const ConstructBehavior = ()  =>
+const ConstructBehavior = (tileSet,tileSetWidth,tileSetHeight,tileMap)  =>
 {
+    // Size of destination buffer.
+    const destSizeX = 800/2
+    const destSizeY = 600/2
+    const destAspectRatio = destSizeY / destSizeX
+
+    const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, CalcUniforms(tileSet,tileSetWidth,tileSetHeight,tileMap, destAspectRatio))
+
+    const geometry = new PIXI.Geometry()
+        .addAttribute('aVertexPosition', // the attribute name
+            [  -destSizeX, -destSizeY, // x, y
+                destSizeX, -destSizeY, // x, y
+                destSizeX,  destSizeY,
+               -destSizeX,  destSizeY
+            ], // x, y
+            2) // the size of the attribute
+        .addAttribute('aUvs', // the attribute name
+            [   0, 0, // u, v
+                1, 0, // u, v
+                1, 1,
+                0, 1
+            ], // u, v
+            2) // the size of the attribute
+        .addIndex([0, 1, 2, 0, 2, 3])
+
     return{
       customDisplayObject: props => new PIXI.Mesh(geometry, shader),
         customApplyProps: function(instance, oldProps, newProps) {
@@ -272,7 +262,6 @@ const ConstructBehavior = ()  =>
           //console.log("MapRendererBehavior",newProps)
         }
     }
-
 }
 
 //let Shader = CustomPIXIComponent(behavior, TYPE)
@@ -280,37 +269,35 @@ const ConstructBehavior = ()  =>
 // unclear to me why the Shader is coming back as a string. Wrapping it in this component
 // so I can add the game data. (kts smell: unsure if adding gameData to render components
 // is a good design, or if we should move that data up a level)
-let ShaderComponent = (props) =>
+
+export const ConstructTileSetShaderComponent = (tileSet, tileSetWidth,tileSetHeight,tileMap) =>
 {
-    let [Shader,setShader] = useState(
-        () =>
-        {
+    const TYPE = "MeshWithShader"
 
-            return CustomPIXIComponent(ConstructBehavior(), TYPE)
-        }
-    )
+    let ShaderComponent = (props) =>
+    {
+        const Shader = CustomPIXIComponent(ConstructBehavior(tileSet,tileSetWidth,tileSetHeight,tileMap), TYPE)
+        return <Shader {...props} />
+    }
 
-    return <Shader {...props} />
+    ShaderComponent.gameData = {
+        size : { x:10,y:10},            // kts need to read this from texture?
+        frames: 200          // kts temp
+    }
+
+
+    ShaderComponent.propTypes =
+    {
+
+    };
+    ShaderComponent.defaultProps =
+    {
+      //as: Sprite,
+      //texture: 0,
+    };
+
+    return ShaderComponent
 }
 
-ShaderComponent.gameData = {
-    size : { x:10,y:10},            // kts need to read this from texture?
-    frames: 200          // kts temp
-}
-
-
-ShaderComponent.propTypes =
-{
-  tileSet: PropTypes.object.isRequired,
-  tileMap: PropTypes.object.isRequired,
-
-};
-ShaderComponent.defaultProps =
-{
-  //as: Sprite,
-  //texture: 0,
-};
-
-
-export default ShaderComponent
+//===============================================================================
 
