@@ -10,7 +10,7 @@ let log = CreateLogger("gameObject")
 
 export const TimedObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
-    //console.log("TimedObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
+    //log.trace("TimedObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
 
     if(object.wallClock > object.duration)
     {   // time to delete oneself
@@ -75,15 +75,34 @@ export const GameObjectRender = (object) =>
 }
 
 //===============================================================================
-// kts TODO: make a better object constructor, one that makes it easy to specify various
-// parameters, but doesn't assume things like an animation speed
-
 // position affectors
 
 let VelocityPositionAffectorTick = (object,delta,clipping) =>
 {
+
+    const VelocityUpdateObjectSpeed = (position,velocity,delta,clipping) =>
+    {
+        let xSpeed = velocity.x
+        let ySpeed = velocity.y
+
+        if(position.x === clipping.min.x || position.x === clipping.max.x)
+        {
+            xSpeed = - xSpeed
+        }
+        if(position.y === clipping.min.y || position.y === clipping.max.y)
+        {
+            ySpeed = - ySpeed
+        }
+
+        return {
+            x: xSpeed,
+            y: ySpeed,
+            r: velocity.r
+        }
+    }
+
     let newPos = MoveObject(object,delta,clipping)
-    let velocity = UpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+    let velocity = VelocityUpdateObjectSpeed(newPos,object.velocity,delta,clipping)
 
     return (
     {
@@ -117,9 +136,85 @@ let CreateVelocityPositionAffector = (x,y,rotation,vx,vy,rv) =>
 
 //===============================================================================
 
+let PlatformPositionAffectorTick = (object,delta,clipping) =>
+{
+    const PlatformUpdateObjectSpeed = (newPos,object,delta,clipping) =>
+    {
+        //log.trace("MoveObject",object,delta,clipping)
+        let newX = object.velocity.x + (object.acceleration.x*delta)
+        let newY = object.velocity.y + (object.acceleration.y*delta)
+        let newR = object.velocity.r + (object.acceleration.r*delta)
+        //log.trace("new",newX,newY,newR)
+        let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
+
+        let clippedR = newR
+
+        //log.trace("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
+        return (
+            {
+                   x: clippedX,
+                   y: clippedY,
+                   r: clippedR
+            }
+        )
+    }
+
+    let newPos = MoveObject(object,delta,clipping)
+    let velocity = PlatformUpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+
+    return (
+    {
+        ...object,
+        position: newPos,
+        velocity: velocity,
+    }
+    )
+}
+
+//===============================================================================
+// falling physics, with collisions with background
+// platformName is the name of the tile mapped playfield we are doing collisions with
+
+export const CreatePlatformPositionAffector = (x,y,rotation,platformName) =>
+{
+    return {
+        position:
+        {
+            x,
+            y,
+            r: rotation,
+        },
+        velocity:
+        {
+            x: 0,
+            y: 0,
+            r: 0,
+        },
+        tick: PlatformPositionAffectorTick,
+    }
+}
+
+//===============================================================================
+// returns first match
+
+export const FindGameObject = (array,name) =>
+{
+    return array.find( (entry) => entry.name === name)
+}
+
+// returns array of all matches
+export const FindGameObjects = (array,name) =>
+{
+    return array.filter( (entry) => entry.name === name)
+}
+
+//===============================================================================
+// kts TODO: make a better object constructor, one that makes it easy to specify various
+// parameters, but doesn't assume things like an animation speed
+
 export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex=0,collides=true) =>
 {
-    //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
+    //log.trace("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
 
     let vpa = CreateVelocityPositionAffector(x,y,rotation,vx,vy,rv)
     return {
@@ -153,10 +248,10 @@ export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,fram
 
 const ClipPosition = (position, clipping) =>
 {
-    //console.log("ClipPosition",position,clipping)
-    //console.log("  ", position.x,clipping.min.x,clipping.max.x)
-    //console.log("  min", Math.max(position.x,clipping.min.x))
-    //console.log("  result",Math.min(Math.max(position.x,clipping.min.x),clipping.max.x))
+    //log.trace("ClipPosition",position,clipping)
+    //log.trace("  ", position.x,clipping.min.x,clipping.max.x)
+    //log.trace("  min", Math.max(position.x,clipping.min.x))
+    //log.trace("  result",Math.min(Math.max(position.x,clipping.min.x),clipping.max.x))
 
     return {
         x: Math.min(Math.max(position.x,clipping.min.x),clipping.max.x),
@@ -166,18 +261,18 @@ const ClipPosition = (position, clipping) =>
 
 //===============================================================================
 
-export const MoveObject = (object, delta,clipping) =>
+const MoveObject = (object, delta,clipping) =>
 {
-    //console.log("MoveObject",object,delta,clipping)
+    //log.trace("MoveObject",object,delta,clipping)
     let newX = object.position.x + (object.velocity.x*delta)
     let newY = object.position.y + (object.velocity.y*delta)
     let newR = object.position.r + (object.velocity.r*delta)
-    //console.log("new",newX,newY,newR)
+    //log.trace("new",newX,newY,newR)
     let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
 
     let clippedR = newR
 
-    //console.log("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
+    //log.trace("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
     return (
         {
                x: clippedX,
@@ -191,7 +286,7 @@ export const MoveObject = (object, delta,clipping) =>
 
 export const AnimateObject = (object, delta) =>
 {
-    //console.log("AnimateObject",object,delta)
+    //log.trace("AnimateObject",object,delta)
     let frameIndex = object.animation.frameIndex
 
     let animation = {...object.animation}
@@ -211,29 +306,6 @@ export const AnimateObject = (object, delta) =>
     }
 
     return ( animation )
-}
-
-//===============================================================================
-
-export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
-{
-    let xSpeed = velocity.x
-    let ySpeed = velocity.y
-
-    if(position.x === clipping.min.x || position.x === clipping.max.x)
-    {
-        xSpeed = - xSpeed
-    }
-    if(position.y === clipping.min.y || position.y === clipping.max.y)
-    {
-        ySpeed = - ySpeed
-    }
-
-    return {
-        x: xSpeed,
-        y: ySpeed,
-        r: velocity.r
-    }
 }
 
 //===============================================================================
@@ -267,10 +339,11 @@ let GameObjectCalculatePositionFromAffectors = (object) =>
     return result
 }
 
+//===============================================================================
 
 export const GameObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
-    //console.log("GameObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
+    //log.trace("GameObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
 
     let localClipping = object.clipping?object.clipping:clipping
 
