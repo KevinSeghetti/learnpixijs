@@ -1,6 +1,9 @@
 // modules/common/gameObject.js
 //===============================================================================
 import { RatePerSecond, } from 'modules/common/time'
+import CreateLogger from 'components/loggingConfig'
+
+let log = CreateLogger("gameObject")
 
 //===============================================================================
 // timed object deletes itself after a given duration
@@ -50,11 +53,12 @@ let GameObjectAnimationRender = (object) =>
     {
         frameIndex = object.animation.frameIndex
     }
+
     return (
     {
         x       : object.position.x,
         y       : object.position.y,
-        rotation: object.position.r,
+        rotation: object.position.r,    // kts stink, rename r to rotation everywhere
         texture : frameIndex,
     }
     )
@@ -62,7 +66,6 @@ let GameObjectAnimationRender = (object) =>
 
 export const GameObjectRender = (object) =>
 {
-
     let animationData = GameObjectAnimationRender(object)
 
     return {
@@ -75,11 +78,27 @@ export const GameObjectRender = (object) =>
 // kts TODO: make a better object constructor, one that makes it easy to specify various
 // parameters, but doesn't assume things like an animation speed
 
-export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex=0,collides=true) =>
+// position affectors
+
+let VelocityPositionAffectorTick = (object,delta,clipping) =>
 {
-    //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
+    let newPos = MoveObject(object,delta,clipping)
+    let velocity = UpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+
+    return (
+    {
+        ...object,
+        position: newPos,
+        velocity: velocity,
+    }
+    )
+}
+
+//===============================================================================
+
+let CreateVelocityPositionAffector = (x,y,rotation,vx,vy,rv) =>
+{
     return {
-        type,
         position:
         {
             x,
@@ -92,6 +111,28 @@ export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,fram
             y: vy,
             r: rv,
         },
+        tick: VelocityPositionAffectorTick,
+    }
+}
+
+//===============================================================================
+
+export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,frameIndex=0,collides=true) =>
+{
+    //console.log("CreateGameObject",x,y,rotation,vx,vy,rv, frameIndex)
+
+    let vpa = CreateVelocityPositionAffector(x,y,rotation,vx,vy,rv)
+    return {
+        type,
+        position:   // temporary until affectors have calculated over this
+        {
+            x,
+            y,
+            r: rotation,
+        },
+        positionAffectors: [
+            vpa,
+        ],
         collision:
         {
             collides, // if 0, then we don't collide with this at all
@@ -197,17 +238,46 @@ export const UpdateObjectSpeed = (position,velocity,delta,clipping) =>
 
 //===============================================================================
 
+let GameObjectUpdatePositionAffectors = (object,delta,clipping) =>
+{
+    //log.trace("GameObjectUpdatePostionAffectors:",object,delta,clipping)
+    return object.positionAffectors.map( (entry) =>
+        {
+            return entry.tick(entry,delta,clipping)
+        }
+    )
+}
+
+let GameObjectCalculatePositionFromAffectors = (object) =>
+{
+    //log.trace("GameObjectCalculatePositionFromAffectors:",object)
+    let result = object.positionAffectors.reduce( (accumulator,entry) =>
+        {
+
+            return (
+                {
+                    x:accumulator.x+entry.position.x,
+                    y:accumulator.y+entry.position.y,
+                    r:accumulator.r+entry.position.r,
+                }
+            )
+        }
+    , {x:0,y:0,r:0})
+    //log.trace("GameObjectCalculatePositionFromAffectors: returns",result)
+    return result
+}
+
+
 export const GameObjectTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
     //console.log("GameObjectTick",object,delta,clipping,keys,Callbacks,collisionList,state)
 
     let localClipping = object.clipping?object.clipping:clipping
 
-    let position = MoveObject(object,delta,localClipping)
     return {
      ...object,
-     position : position,
-     velocity : UpdateObjectSpeed(position,object.velocity,delta,localClipping),
+     positionAffectors: GameObjectUpdatePositionAffectors(object,delta,localClipping),
+     position: GameObjectCalculatePositionFromAffectors(object),
      animation: AnimateObject(object,delta),
     }
 }
