@@ -3,12 +3,10 @@
 import { types as scrollerTypes } from 'modules/scroller/index'
 import { GameStates } from 'modules/common/tick'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
-import { CreateGeneratorObject } from 'modules/common/generator'
 import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
 import { CreateTiledMapObject } from 'modules/common/tiledMapObject'
 import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
-import { CreateEnemyObject } from 'modules/common/enemyObject'
 import { CreateScoreObject } from 'modules/common/scoreObject'
 import { CreatePlayerStatsObject } from 'modules/common/playerStatsObject'
 import { CreateBulletObject } from 'modules/common/bulletObject'
@@ -16,7 +14,6 @@ import { GameTick } from 'modules/common/tick'
 import {
     PlayerComponent,
     BulletComponent,
-    EnemyComponent,
     ExplosionComponent,
     RockComponent,
     BackgroundComponent,
@@ -89,6 +86,13 @@ const CreateGameObjects = () =>
             clipping:backgroundClipping
         })
 
+//  objects.push(
+//      {
+//          ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component),
+//          mapSpeed : PixelsPerSecond(10),
+//      }
+//  )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent) )
 
 
     const objectCount = 5
@@ -142,16 +146,6 @@ const CreateGameObjects = () =>
         )
     }
 
-    const GeneratedObjectFactory = (x,y) =>
-    {
-        //console.log("GeneratedObjectFactory:",x,y)
-        return CreateEnemyObject(
-            x,y,0,PixelsPerSecond(500),
-           EnemyComponent,
-           ExplosionObjectFactory,
-        )
-    }
-
     const BulletObjectFactory = (x,y) =>
     {
         return CreateBulletObject(
@@ -160,8 +154,6 @@ const CreateGameObjects = () =>
         )
     }
 
-    const generationRate = RatePerSecond(4)
-    objects.push(CreateGeneratorObject(0,2,scrollerTypes.stageOptions.width,0,generationRate,GeneratedObjectFactory))
     objects.push(CreatePlayerObject(
         scrollerTypes.stageOptions.width/2,
         scrollerTypes.stageOptions.height-20,
@@ -183,14 +175,6 @@ const CreateAttractObjects = () =>
         {...CreateGameObject('Background',2000,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,BackgroundComponent,0,false),
             clipping:backgroundClipping
         })
-
-    // tile set
-//  objects.push(
-//      {...CreateGameObject('TileSet',0,0,0,PixelsPerSecond(40),PixelsPerSecond(40),0,TileSetComponent,0,false),
-//          clipping:backgroundClipping
-//      })
-
-    // map, with custom renderer
 
     objects.push(
         {

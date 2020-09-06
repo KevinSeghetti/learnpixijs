@@ -68,10 +68,9 @@ const InnerObjects = ({state,tick,app}) =>
     }
     const itemsRef = useRef([]);
 
-    const [filters, setFilters] = useState([])
+    const [filters/*, setFilters*/] = useState([])
 
     // kts TODO: was having an issue on reload where useEffect/setState were getting into a recursive loop
-    let filterObjectList = []
 //  let filterObjectList = state.gameObjects.filter( (entry,index) => entry.pixiFilter)
 //  // kts TODO: handle degenerate case where one filter gets added while another gets subtracted
 //  useEffect(() => {
@@ -152,11 +151,7 @@ const InnerObjects = ({state,tick,app}) =>
         }
             return <entry.renderComponent
                     key={index}
-                    x={entry.position.x}
-                    y={entry.position.y}
-                    texture={entry.animation.frameIndex}
-                    rotation={entry.position.r}
-                    {...entry.renderData}
+                    {...entry.render(entry) }
                     {...extra }
             />
         }

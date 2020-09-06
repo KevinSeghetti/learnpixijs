@@ -41,6 +41,37 @@ export const CreateTimedObject = (type,x,y,xDelta,yDelta, renderComponent, durat
 }
 
 //===============================================================================
+
+let GameObjectAnimationRender = (object) =>
+{
+    let frameIndex = 0
+
+    if(object.animation )
+    {
+        frameIndex = object.animation.frameIndex
+    }
+    return (
+    {
+        x       : object.position.x,
+        y       : object.position.y,
+        rotation: object.position.r,
+        texture : frameIndex,
+    }
+    )
+}
+
+export const GameObjectRender = (object) =>
+{
+
+    let animationData = GameObjectAnimationRender(object)
+
+    return {
+        ...animationData,
+        ...object.renderData,
+    }
+}
+
+//===============================================================================
 // kts TODO: make a better object constructor, one that makes it easy to specify various
 // parameters, but doesn't assume things like an animation speed
 
@@ -72,6 +103,7 @@ export const CreateGameObject = (type,x,y,rotation,vx,vy,rv,renderComponent,fram
             wallClock: 0,
         },
         tick: GameObjectTick,
+        render: GameObjectRender,
         renderComponent,
     }
 }

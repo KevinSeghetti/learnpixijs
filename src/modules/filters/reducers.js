@@ -4,7 +4,7 @@ import { PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
 import { types as filtersTypes } from 'modules/filters/index'
 import { CreateGameObject } from 'modules/common/gameObject'
 import { GameTick } from 'modules/common/tick'
-import * as PIXI from "pixi.js";
+//import * as PIXI from "pixi.js";
 
 import {
     BackgroundComponent,
