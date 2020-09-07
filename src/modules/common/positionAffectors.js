@@ -23,11 +23,11 @@ const ClipPosition = (position, clipping) =>
 
 const MoveObject = (object, delta,clipping) =>
 {
-    //log.trace("MoveObject",object,delta,clipping)
+    log.trace("MoveObject",object,delta,clipping)
     let newX = object.position.x + (object.velocity.x*delta)
     let newY = object.position.y + (object.velocity.y*delta)
     let newR = object.position.r + (object.velocity.r*delta)
-    //log.trace("new",newX,newY,newR)
+    log.trace("MoveObject:new",newX,newY,newR)
     let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
 
     let clippedR = newR
@@ -106,8 +106,11 @@ export const CreateVelocityPositionAffector = (x,y,rotation,vx,vy,rv) =>
 
 const PlatformPositionAffectorTick = (object,delta,clipping) =>
 {
+    log.trace("PlatformPositionAffectorTick",object,delta,clipping)
     const PlatformUpdateObjectSpeed = (newPos,object,delta,clipping) =>
     {
+        log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed",object,delta,clipping)
+
         //log.trace("MoveObject",object,delta,clipping)
         let newX = object.velocity.x + (object.acceleration.x*delta)
         let newY = object.velocity.y + (object.acceleration.y*delta)
@@ -128,7 +131,7 @@ const PlatformPositionAffectorTick = (object,delta,clipping) =>
     }
 
     let newPos = MoveObject(object,delta,clipping)
-    let velocity = PlatformUpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+    let velocity = PlatformUpdateObjectSpeed(newPos,object,delta,clipping)
     log.trace("PlatformPositionAffectorTick: new velocity",velocity)
 
     return (
@@ -162,7 +165,7 @@ export const CreatePlatformPositionAffector = (x,y,rotation,platformName) =>
         acceleration:
         {
             x: 0,
-            y: 10,
+            y: 0.001,
             r: 0,
         },
 

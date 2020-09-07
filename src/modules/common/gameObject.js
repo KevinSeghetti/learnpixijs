@@ -153,7 +153,7 @@ export const AnimateObject = (object, delta) =>
 
 //===============================================================================
 
-let GameObjectUpdatePositionAffectors = (object,delta,clipping) =>
+export const GameObjectUpdatePositionAffectors = (object,delta,clipping) =>
 {
     //log.trace("GameObjectUpdatePostionAffectors:",object,delta,clipping)
     return object.positionAffectors.map( (entry) =>
@@ -163,7 +163,7 @@ let GameObjectUpdatePositionAffectors = (object,delta,clipping) =>
     )
 }
 
-let GameObjectCalculatePositionFromAffectors = (object) =>
+export const GameObjectCalculatePositionFromAffectors = (object) =>
 {
     //log.trace("GameObjectCalculatePositionFromAffectors:",object)
     let result = object.positionAffectors.reduce( (accumulator,entry) =>

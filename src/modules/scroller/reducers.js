@@ -3,7 +3,7 @@
 import { types as scrollerTypes } from 'modules/scroller/index'
 import { GameStates } from 'modules/common/tick'
 import { Seconds,RatePerSecond, PixelsPerSecond, RadiansPerSecond } from 'modules/common/time'
-import { CreatePlayerObject,PlayerStates } from 'modules/common/playerObject'
+import { CreatePlayerObject,PlayerStates } from './playerObject'
 import { CreateTiledMapObject } from 'modules/common/tiledMapObject'
 import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
