@@ -16,7 +16,7 @@ import {
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("filters")
+let log = CreateLogger("filters")   // eslint-disable-line no-unused-vars
 
 //===============================================================================
 

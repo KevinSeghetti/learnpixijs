@@ -3,7 +3,7 @@
 //import CreateLogger from 'components/Shared/loggingConfig'
 import * as generatorActionsTypes from "./types"
 
-//let log = CreateLogger("generatorActions")
+//let log = CreateLogger("generatorActions")    // eslint-disable-line no-unused-vars
 
 // ------------------------------------
 // Actions

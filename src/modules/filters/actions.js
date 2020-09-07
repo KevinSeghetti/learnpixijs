@@ -3,8 +3,6 @@
 //import CreateLogger from 'components/Shared/loggingConfig'
 import * as filtersActionsTypes from "./types"
 
-//let log = CreateLogger("filtersActions")
-
 // ------------------------------------
 // Actions
 // ------------------------------------

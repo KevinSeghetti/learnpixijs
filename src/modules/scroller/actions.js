@@ -3,7 +3,7 @@
 //import CreateLogger from 'components/Shared/loggingConfig'
 import * as scrollerActionsTypes from "./types"
 
-//let log = CreateLogger("scrollerActions")
+//let log = CreateLogger("scrollerActions") // eslint-disable-line no-unused-vars
 
 // ------------------------------------
 // Actions

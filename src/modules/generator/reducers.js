@@ -10,7 +10,7 @@ import {BunnyComponent} from "containers/generator/Assets";
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("generator")
+let log = CreateLogger("generator") // eslint-disable-line no-unused-vars
 
 //===============================================================================
 

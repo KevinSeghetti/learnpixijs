@@ -3,7 +3,7 @@
 //import CreateLogger from 'components/Shared/loggingConfig'
 import * as shooterActionsTypes from "./types"
 
-//let log = CreateLogger("shooterActions")
+//let log = CreateLogger("shooterActions")  // eslint-disable-line no-unused-vars
 
 // ------------------------------------
 // Actions

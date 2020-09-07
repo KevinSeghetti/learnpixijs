@@ -75,12 +75,12 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
 
 //===============================================================================
 
-export const CreateTiledMapObject = (x,y, renderComponent) =>
+export const CreateTiledMapObject = (x,y, renderComponent, name) =>
 {
 
     let object = {
         ...CreateGameObject(
-            'TiledMap',
+            name,
             x,y,0,
             0,PixelsPerSecond(0),PixelsPerSecond(0),
             renderComponent,

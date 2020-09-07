@@ -2,6 +2,11 @@
 
 import { CreateGameObject } from 'modules/common/gameObject'
 import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
+import { CreatePlatformPositionAffector } from './positionAffectors'
+
+import CreateLogger from 'components/loggingConfig'
+
+let log = CreateLogger("playerObject")  // eslint-disable-line no-unused-vars
 
 //===============================================================================
 
@@ -17,8 +22,8 @@ export const PlayerStates =
 
 export const PlayerTick = (object,delta,clipping,keys,Callbacks,collisionList,state) =>
 {
-    //console.log("PlayerObjectTick:",object,delta,clipping,keys,Callbacks,collisionList,state)
-    //console.log("PlayerTick:keys",keys)
+    log.trace("PlayerObjectTick:",object,delta,clipping,keys,Callbacks,collisionList,state)
+    //log.trace("PlayerTick:keys",keys)
 
     const playerSpeed = PixelsPerSecond(250)
     const deadTime = Seconds(2)
@@ -26,7 +31,7 @@ export const PlayerTick = (object,delta,clipping,keys,Callbacks,collisionList,st
     let lastGenerated = object.lastGenerated
     let xDelta = 0
     let playerState = state.globals.playerState
-    //console.log("playerstate",playerState)
+    //log.trace("playerstate",playerState)
     let animation = object.animation
 
     if(playerState === PlayerStates.DYING)
@@ -115,6 +120,9 @@ export const CreatePlayerObject = (x,y, renderComponent, bulletFactory,explosion
         explosionFactory: explosionFactory,
         fireRate: RatePerSecond(10),
         wallClock: 0,
+        positionAffectors: [
+            CreatePlatformPositionAffector(x,y,0,"Platform"),
+        ],
     }
 }
 

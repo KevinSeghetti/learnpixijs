@@ -24,7 +24,7 @@ import {
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("scroller")
+let log = CreateLogger("scroller")  // eslint-disable-line no-unused-vars
 
 //===============================================================================
 
@@ -86,14 +86,7 @@ const CreateGameObjects = () =>
             clipping:backgroundClipping
         })
 
-//  objects.push(
-//      {
-//          ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component),
-//          mapSpeed : PixelsPerSecond(10),
-//      }
-//  )
-    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent) )
-
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform") )
 
     const objectCount = 5
     for(let i = 0;i < objectCount; ++i)
@@ -156,7 +149,7 @@ const CreateGameObjects = () =>
 
     objects.push(CreatePlayerObject(
         scrollerTypes.stageOptions.width/2,
-        scrollerTypes.stageOptions.height-20,
+        0,
         PlayerComponent,
         BulletObjectFactory,
         ExplosionObjectFactory,
@@ -178,11 +171,11 @@ const CreateAttractObjects = () =>
 
     objects.push(
         {
-            ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component),
+            ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component,"BackgroundMap"),
             mapSpeed : PixelsPerSecond(10),
         }
     )
-    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent) )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform") )
 
     objects.push(
         {

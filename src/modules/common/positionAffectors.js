@@ -1,7 +1,8 @@
+// modules/common/positionAffectors.js
 
+import CreateLogger from 'components/loggingConfig'
 
-
-//===============================================================================
+let log = CreateLogger("positionAffectors") // eslint-disable-line no-unused-vars
 
 //===============================================================================
 
@@ -128,6 +129,7 @@ const PlatformPositionAffectorTick = (object,delta,clipping) =>
 
     let newPos = MoveObject(object,delta,clipping)
     let velocity = PlatformUpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+    log.trace("PlatformPositionAffectorTick: new velocity",velocity)
 
     return (
     {
@@ -157,7 +159,16 @@ export const CreatePlatformPositionAffector = (x,y,rotation,platformName) =>
             y: 0,
             r: 0,
         },
+        acceleration:
+        {
+            x: 0,
+            y: 10,
+            r: 0,
+        },
+
         tick: PlatformPositionAffectorTick,
     }
 }
+
+//===============================================================================
 

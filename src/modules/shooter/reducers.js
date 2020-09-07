@@ -24,7 +24,7 @@ import {
 
 import CreateLogger from 'components/loggingConfig'
 
-let log = CreateLogger("shooter")
+let log = CreateLogger("shooter")   // eslint-disable-line no-unused-vars
 
 //===============================================================================
 

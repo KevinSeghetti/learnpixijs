@@ -9,7 +9,8 @@ import CreateLogger from 'components/loggingConfig'
 
 //===============================================================================
 
-let log = CreateLogger("worldRender")
+let log = CreateLogger("worldRender")   // eslint-disable-line no-unused-vars
+
 //===============================================================================
 
 // kts TODO: make this take an array of keys

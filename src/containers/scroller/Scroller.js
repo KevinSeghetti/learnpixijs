@@ -10,7 +10,7 @@ import CreateLogger from 'components/loggingConfig'
 
 //===============================================================================
 
-let log = CreateLogger("scroller")
+let log = CreateLogger("scroller")  // eslint-disable-line no-unused-vars
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,

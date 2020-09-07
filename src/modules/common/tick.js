@@ -134,7 +134,7 @@ export const GameTick = (state,delta,keys,clipping) =>
         newGameState = GameStates.PLAYING
         newPlayerLives = 4
         newScore = 0
-        newPlayerState = PlayerStates.PLAYING
+        newPlayerState = PlayerStates.PLAYING       // kts smell: maybe need a start new game for each game
     }
 
     const GameOver = () =>
