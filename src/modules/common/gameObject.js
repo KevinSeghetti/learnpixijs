@@ -80,13 +80,13 @@ export const GameObjectRender = (object) =>
 
 export const FindGameObject = (array,name) =>
 {
-    return array.find( (entry) => entry.name === name)
+    return array.find( (entry) => entry.type === name)
 }
 
 // returns array of all matches
 export const FindGameObjects = (array,name) =>
 {
-    return array.filter( (entry) => entry.name === name)
+    return array.filter( (entry) => entry.type === name)
 }
 
 //===============================================================================
@@ -153,12 +153,12 @@ export const AnimateObject = (object, delta) =>
 
 //===============================================================================
 
-export const GameObjectUpdatePositionAffectors = (object,delta,clipping) =>
+export const GameObjectUpdatePositionAffectors = (object,delta,clipping,gameObjects,keys) =>
 {
-    //log.trace("GameObjectUpdatePostionAffectors:",object,delta,clipping)
+    //log.trace("GameObjectUpdatePostionAffectors:",object,delta,clipping,gameObjects,keys)
     return object.positionAffectors.map( (entry) =>
         {
-            return entry.tick(entry,delta,clipping)
+            return entry.tick(entry,delta,clipping,gameObjects,keys)
         }
     )
 }
@@ -192,7 +192,7 @@ export const GameObjectTick = (object,delta,clipping,keys,Callbacks,collisionLis
 
     return {
      ...object,
-     positionAffectors: GameObjectUpdatePositionAffectors(object,delta,localClipping),
+     positionAffectors: GameObjectUpdatePositionAffectors(object,delta,localClipping,state.gameObjects,keys),
      position: GameObjectCalculatePositionFromAffectors(object),
      animation: AnimateObject(object,delta),
     }

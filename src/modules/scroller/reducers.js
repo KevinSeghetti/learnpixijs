@@ -86,7 +86,7 @@ const CreateGameObjects = () =>
             clipping:backgroundClipping
         })
 
-    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform") )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform",scrollerTypes.stageOptions.width/32) )
 
     const objectCount = 5
     for(let i = 0;i < objectCount; ++i)
@@ -171,11 +171,11 @@ const CreateAttractObjects = () =>
 
     objects.push(
         {
-            ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component,"BackgroundMap"),
+            ...CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),Map2Component,"BackgroundMap",53),
             mapSpeed : PixelsPerSecond(10),
         }
     )
-    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform") )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform",64) )
 
     objects.push(
         {
@@ -205,7 +205,7 @@ const scrollerInitialState = {
   {     // stored here so that other objects can see them.
       score: 0,
       playerLives: 4,
-      gameState: GameStates.ATTRACT,
+      gameState: GameStates.PLAYING,
       playerState: PlayerStates.PLAYING,
   },
   gameObjects: CreateGameObjects(),

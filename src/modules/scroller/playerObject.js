@@ -1,6 +1,6 @@
 // modules/common/player.js
 
-import { CreateGameObject, } from 'modules/common/gameObject'
+import { CreateGameObject } from 'modules/common/gameObject'
 import { PlayerStates } from 'modules/common/playerObject'
 import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
 import { CreatePlatformPositionAffector } from 'modules/common/positionAffectors'

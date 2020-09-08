@@ -1,10 +1,15 @@
 // modules/common/positionAffectors.js
 
+import { FindGameObjects } from 'modules/common/gameObject'
+import { FindTileInMap } from 'modules/common/tiledMapObject'
+import { PixelsPerSecond } from 'modules/common/time'
+
 import CreateLogger from 'components/loggingConfig'
 
 let log = CreateLogger("positionAffectors") // eslint-disable-line no-unused-vars
 
 //===============================================================================
+// given a 2D vector of x,y, clip it to be within the clipping range of min,max
 
 const ClipPosition = (position, clipping) =>
 {
@@ -23,20 +28,22 @@ const ClipPosition = (position, clipping) =>
 
 const MoveObject = (object, delta,clipping) =>
 {
-    log.trace("MoveObject",object,delta,clipping)
+    //log.trace("MoveObject",object,delta,clipping)
     let newX = object.position.x + (object.velocity.x*delta)
     let newY = object.position.y + (object.velocity.y*delta)
     let newR = object.position.r + (object.velocity.r*delta)
-    log.trace("MoveObject:new",newX,newY,newR)
-    let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
+    //log.trace("MoveObject:new",newX,newY,newR)
+    let clipped = ClipPosition({x:newX,y:newY},clipping)
+
+
+
 
     let clippedR = newR
 
     //log.trace("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
     return (
         {
-               x: clippedX,
-               y: clippedY,
+               ...clipped,
                r: clippedR
         }
     )
@@ -45,9 +52,8 @@ const MoveObject = (object, delta,clipping) =>
 //===============================================================================
 // position affectors
 
-const VelocityPositionAffectorTick = (object,delta,clipping) =>
+const VelocityPositionAffectorTick = (object,delta,clipping/*,gameObjects,keys*/) =>
 {
-
     const VelocityUpdateObjectSpeed = (position,velocity,delta,clipping) =>
     {
         let xSpeed = velocity.x
@@ -104,35 +110,100 @@ export const CreateVelocityPositionAffector = (x,y,rotation,vx,vy,rv) =>
 
 //===============================================================================
 
-const PlatformPositionAffectorTick = (object,delta,clipping) =>
+const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
 {
-    log.trace("PlatformPositionAffectorTick",object,delta,clipping)
-    const PlatformUpdateObjectSpeed = (newPos,object,delta,clipping) =>
+    //log.trace("PlatformPositionAffectorTick",object,delta,clipping,gameObjects)
+
+    const playerSpeed = PixelsPerSecond(250)
+
+    // see if we are standing on anything
+    let platformObjects = FindGameObjects(gameObjects,"Platform")
+
+    const PlatformUpdateObjectSpeed = (velocity,acceleration,delta,clipping) =>
     {
-        log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed",object,delta,clipping)
+        //log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed",velocity,acceleration,delta,clipping,platformObjects)
 
-        //log.trace("MoveObject",object,delta,clipping)
-        let newX = object.velocity.x + (object.acceleration.x*delta)
-        let newY = object.velocity.y + (object.acceleration.y*delta)
-        let newR = object.velocity.r + (object.acceleration.r*delta)
-        //log.trace("new",newX,newY,newR)
-        let {x:clippedX, y:clippedY} = ClipPosition({x:newX,y:newY},clipping)
+        // apply dampening, so objects come to a stop if no forces act on them.
+        const dampeningX = 0.05
+        const dampeningY = 1.0
+        const dampeningR = 0.05
+        let newVelocityX = velocity.x * (dampeningX*delta)
+        let newVelocityY = velocity.y * (dampeningY*delta)
+        let newVelocityR = velocity.r * (dampeningR*delta)
 
-        let clippedR = newR
+        newVelocityX = newVelocityX + (acceleration.x*delta)
+        newVelocityY = newVelocityY + (acceleration.y*delta)
+        newVelocityR = newVelocityR + (acceleration.r*delta)
 
-        //log.trace("MoveObject",object,delta,{newX,newY},{clippedX,clippedY})
+        //log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed:new",newX,newY,newR)
+        let clippedPos = ClipPosition({x:newVelocityX,y:newVelocityY},clipping)
+
+        let clippedR = newVelocityR
+
+        //log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed:new",{newX,newY},{clippedX,clippedY})
         return (
             {
-                   x: clippedX,
-                   y: clippedY,
+                  ...clippedPos,
                    r: clippedR
             }
         )
     }
 
     let newPos = MoveObject(object,delta,clipping)
-    let velocity = PlatformUpdateObjectSpeed(newPos,object,delta,clipping)
-    log.trace("PlatformPositionAffectorTick: new velocity",velocity)
+    log.trace("PlatformPositionAffectorTick: newPos",newPos,clipping,object)
+    let acceleration = object.acceleration
+
+    acceleration.x = 0
+
+    if(keys.arrowLeft)
+    {
+        acceleration.x += -playerSpeed * delta
+    }
+    if(keys.arrowRight)
+    {
+        acceleration.x += playerSpeed * delta
+    }
+
+    //log.trace("@@",acceleration)
+
+    const maxSpeedX = PixelsPerSecond(100)
+    const maxSpeedY = PixelsPerSecond(300)
+    const speedClipping = {
+        min:
+        {
+            x:-maxSpeedX,
+            y:-maxSpeedY,
+        },
+        max:
+        {
+            x:maxSpeedX,
+            y:maxSpeedY,
+        }
+
+    }
+    let velocity = PlatformUpdateObjectSpeed(object.velocity,acceleration,delta,speedClipping)
+
+    // now check to see if we are standing on anything
+    // kts TODO: make an AABB of old position to new position, to make sure we don't fall through anything
+    platformObjects.forEach( (entry) =>
+    {
+        // for each platform, look up our current position in it
+        //log.trace("PlatformPositionAffectorTick: check",entry.renderComponent.gameData.map)
+        let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,newPos)
+        if(tileIndex != 0)
+        {
+            newPos.y = object.position.y
+            velocity =
+                    {
+                        ...velocity,
+                        y:0,
+                    }
+
+        }
+    }
+    )
+
+    //log.trace("PlatformPositionAffectorTick: new velocity",velocity)
 
     return (
     {

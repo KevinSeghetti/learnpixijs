@@ -282,6 +282,7 @@ export const ConstructTileSetShaderComponent = (tileSet, tileSetSize,tileMap,des
     }
 
     ShaderComponent.gameData = {
+        map: tileMap,
         size : { x:10,y:10},            // kts need to read this from texture?
         frames: 200          // kts temp
     }
