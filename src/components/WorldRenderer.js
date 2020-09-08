@@ -2,6 +2,7 @@ import React,{ useState, useRef, useEffect } from "react";
 import PropTypes from 'prop-types'
 import { withApp, Container } from "react-pixi-fiber";
 import { GameStates  } from 'modules/common/tick'
+import { Seconds } from 'modules/common/time'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -161,7 +162,9 @@ const InnerObjects = ({state,tick,app}) =>
     )
 
     const animate = delta => {
-        tick(app.ticker.elapsedMS,keys)
+        // clip at 1 second
+        let elapsedMS = Math.min(app.ticker.elapsedMS,Seconds(1))
+        tick(elapsedMS,keys)
     };
 
     useEffect(() => {

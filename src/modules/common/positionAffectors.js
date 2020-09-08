@@ -190,7 +190,7 @@ const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
         // for each platform, look up our current position in it
         //log.trace("PlatformPositionAffectorTick: check",entry.renderComponent.gameData.map)
         let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,newPos)
-        if(tileIndex != 0)
+        if(tileIndex !== 0)
         {
             newPos.y = object.position.y
             velocity =
