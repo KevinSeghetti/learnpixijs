@@ -123,8 +123,11 @@ let SurroundingBox = (pos1, pos2, size) =>
 const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects,keys) =>
 {
     log.trace("PlatformPositionAffectorTick",affector,delta,clipping,gameObjects)
+    let onGround = false
 
     const playerSpeed = PixelsPerSecond(250)
+    const playerJumpSpeed = PixelsPerSecond(25)
+    const gravity = PixelsPerSecond(0.2)
 
     // see if we are standing on anything
     let platformObjects = FindGameObjects(gameObjects,"Platform")
@@ -134,11 +137,12 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
         //log.trace("PlatformPositionAffectorTick:PlatformUpdateObjectSpeed",velocity,acceleration,delta,clipping,platformObjects)
 
         // apply dampening, so objects come to a stop if no forces act on them.
+        // kts TODO: consider turning this into actual drag. or maybe just on x axis when on the ground
         const dampeningX = 0.05
         const dampeningY = 1.0
         const dampeningR = 0.05
         let newVelocityX = velocity.x * (dampeningX*delta)
-        let newVelocityY = velocity.y * (dampeningY*delta)
+        let newVelocityY = velocity.y //  * (dampeningY*delta)
         let newVelocityR = velocity.r * (dampeningR*delta)
 
         newVelocityX = newVelocityX + (acceleration.x*delta)
@@ -164,6 +168,7 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
     let acceleration = affector.acceleration
 
     acceleration.x = 0
+    acceleration.y = 0
 
     if(keys.arrowLeft)
     {
@@ -174,24 +179,35 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
         acceleration.x += playerSpeed * delta
     }
 
+    acceleration.y += gravity * delta       // gravity
+
+    if(keys.space && affector.onGround)
+    {
+        acceleration.y -= playerJumpSpeed * delta
+    }
+
     //log.trace("@@",acceleration)
 
-    const maxSpeedX = PixelsPerSecond(100)
-    const maxSpeedY = PixelsPerSecond(300)
-    const speedClipping = {
+    const maxVelocityX = PixelsPerSecond(500)
+    const maxVelocityY = PixelsPerSecond(2000)
+    const velocityClipping = {
         min:
         {
-            x:-maxSpeedX,
-            y:-maxSpeedY,
+            x:-maxVelocityX,
+            y:-maxVelocityY,
         },
         max:
         {
-            x:maxSpeedX,
-            y:maxSpeedY,
+            x:maxVelocityX,
+            y:maxVelocityY,
         }
 
     }
-    let velocity = PlatformUpdateObjectSpeed(affector.velocity,acceleration,delta,speedClipping)
+
+    let velocity = PlatformUpdateObjectSpeed(affector.velocity,acceleration,delta,velocityClipping)
+    log.trace("PlatformPositionAffectorTick: affvelocity",affector.ddvelocity)
+    log.trace("PlatformPositionAffectorTick: velocity",velocity)
+    log.trace("PlatformPositionAffectorTick: acceleration",acceleration)
 
     // now check to see if we have collided with anything in the tile map
 
@@ -253,6 +269,7 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
                 {
                     newX = prevX        // stop updating X if we hit
                     xStep = 0
+                    velocity.x = 0
                     log.trace("PlatformPositionAffectorTick:X hit",step)
                 }
 
@@ -260,8 +277,13 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
                 if(tileIndex !== 0)
                 {
                     newY = prevY        // stop updating Y if we hit
+                    velocity.y = 0
                     yStep = 0
-                        log.trace("PlatformPositionAffectorTick:Y hit",step)
+                    if(yDelta > 0)
+                    {
+                        onGround = true         // kludge flag for when standing on ground
+                    }
+                    log.trace("PlatformPositionAffectorTick:Y hit",step)
                 }
 
                 prevX=newX
@@ -301,6 +323,7 @@ const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects
         ...affector,
         position: newPos,
         velocity: velocity,
+        onGround,
     }
     )
 }

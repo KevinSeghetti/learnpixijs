@@ -79,7 +79,7 @@ export const CreatePlayerObject = (x,y, renderComponent, bulletFactory,explosion
     let object = CreateGameObject(
         'Player',
         x,y,0,
-        0,5,0,
+        0,0,0,
         renderComponent
     )
     object.baseTick = object.tick       // kts experiment with manual inheritance
