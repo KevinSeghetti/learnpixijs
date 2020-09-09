@@ -2,7 +2,7 @@
 
 import { CreateGameObject } from 'modules/common/gameObject'
 import { PixelsPerSecond } from 'modules/common/time'
-
+import { FindGameObject } from 'modules/common/gameObject'
 import CreateLogger from 'components/loggingConfig'
 
 let log = CreateLogger("tiledMapObject")
@@ -36,33 +36,43 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
         }
     }
 
+    let followObject = FindGameObject(state.gameObjects,object.followName)
+    if(followObject)
+    {
+        let map = object.renderComponent.gameData.map
 
-    if(keys.plus &&  newTileMapXPer > 5)
-    {
-        newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
-    }
-    if(keys.minus &&  newTileMapXPer < 128)
-    {
-        newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
-    }
+        newTileMapXOffset = (followObject.position.x-object.positionOffset.x)/map.tilewidth
+        newTileMapYOffset = (followObject.position.y-object.positionOffset.y)/map.tileheight
 
-    if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
-    {
-        newTileMapXOffset = newTileMapXOffset - (mapSpeed * delta)
-    }
-    if(keys.arrowRight &&  newTileMapXOffset < movementClipping.max.x)
-    {
-        newTileMapXOffset = newTileMapXOffset + (mapSpeed * delta)
+        //console.log("@@",followObject.position,object.positionOffset, newTileMapXOffset,newTileMapYOffset)
     }
 
-    if(keys.arrowUp &&  newTileMapYOffset > movementClipping.min.x)
-    {
-        newTileMapYOffset = newTileMapYOffset - (mapSpeed * delta)
-    }
-    if(keys.arrowDown &&  newTileMapYOffset < movementClipping.max.x)
-    {
-        newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
-    }
+//  if(keys.plus &&  newTileMapXPer > 5)
+//  {
+//      newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
+//  }
+//  if(keys.minus &&  newTileMapXPer < 128)
+//  {
+//      newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
+//  }
+//
+//  if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
+//  {
+//      newTileMapXOffset = newTileMapXOffset - (mapSpeed * delta)
+//  }
+//  if(keys.arrowRight &&  newTileMapXOffset < movementClipping.max.x)
+//  {
+//      newTileMapXOffset = newTileMapXOffset + (mapSpeed * delta)
+//  }
+//
+//  if(keys.arrowUp &&  newTileMapYOffset > movementClipping.min.x)
+//  {
+//      newTileMapYOffset = newTileMapYOffset - (mapSpeed * delta)
+//  }
+//  if(keys.arrowDown &&  newTileMapYOffset < movementClipping.max.x)
+//  {
+//      newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
+//  }
 
     return {
         ...object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state) ,
@@ -79,7 +89,7 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
 
 //===============================================================================
 
-export const CreateTiledMapObject = (x,y, renderComponent, name, tileMapXPer) =>
+export const CreateTiledMapObject = (x,y, renderComponent, name, tileMapXPer,followName,positionOffset) =>
 {
 
     let object = {
@@ -108,6 +118,8 @@ export const CreateTiledMapObject = (x,y, renderComponent, name, tileMapXPer) =>
             tileMapXPer,
         },
         honorCamera: false,
+        followName,
+        positionOffset,
     }
 }
 

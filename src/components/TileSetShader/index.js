@@ -255,9 +255,9 @@ const ConstructBehavior = (tileSet,tileSetSize,tileMap,destSize)  =>
           this.applyDisplayObjectProps(oldProps, newProps)
           //Object.assign(instance.shader.uniforms,CalcUniforms(tileSet,tileMap))
           instance.position.set(newProps.x,newProps.y)
-          instance.shader.uniforms.tileMapXOffset = Math.floor(newProps.tileMapXOffset);
-          instance.shader.uniforms.tileMapYOffset = Math.floor(newProps.tileMapYOffset);
-          instance.shader.uniforms.mapDisplayWidth = Math.floor(newProps.tileMapXPer)
+          instance.shader.uniforms.tileMapXOffset   = newProps.tileMapXOffset
+          instance.shader.uniforms.tileMapYOffset   = newProps.tileMapYOffset
+          instance.shader.uniforms.mapDisplayWidth  = Math.floor(newProps.tileMapXPer)
           instance.shader.uniforms.mapDisplayHeight = Math.floor(newProps.tileMapXPer*.75)
 
           //console.log("MapRendererBehavior",newProps)

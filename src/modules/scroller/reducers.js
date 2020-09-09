@@ -38,8 +38,8 @@ const clipping =
     },
     max:
     {
-        x: scrollerTypes.stageOptions.width,
-        y: scrollerTypes.stageOptions.height,
+        x: 100*32, //scrollerTypes.stageOptions.width,
+        y: 100*32, //scrollerTypes.stageOptions.height,
     }
 }
 
@@ -87,7 +87,7 @@ const CreateGameObjects = () =>
             clipping:backgroundClipping
         })
 
-    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform",scrollerTypes.stageOptions.width/32) )
+    objects.push( CreateTiledMapObject((scrollerTypes.stageOptions.width/2),(scrollerTypes.stageOptions.height/2),MapComponent,"Platform",scrollerTypes.stageOptions.width/32,"Player",{x:(scrollerTypes.stageOptions.width/2),y:(scrollerTypes.stageOptions.height/2)} ))
 
     const objectCount = 5
     for(let i = 0;i < objectCount; ++i)
@@ -152,8 +152,8 @@ const CreateGameObjects = () =>
     }
 
     objects.push(CreatePlayerObject(
-        scrollerTypes.stageOptions.width/2,
-        0,
+        300,            // starting position
+        1600,
         PlayerComponent,
         BulletObjectFactory,
         ExplosionObjectFactory,
