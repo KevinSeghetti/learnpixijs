@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { withApp, Container } from "react-pixi-fiber";
 import { GameStates  } from 'modules/common/tick'
 import { Seconds } from 'modules/common/time'
+import { FindGameObject } from 'modules/common/gameObject'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -48,9 +49,9 @@ function useKey(key) {
 
 //-------------------------------------------------------------------------------
 
-const InnerObjects = ({state,tick,app}) =>
+const InnerObjects = ({state,tick,app,cameraName}) =>
 {
-    log.trace("WorldRenderer::InnerObjects:renderer:",state,tick,app)
+    log.trace("WorldRenderer::InnerObjects:renderer:",state,tick,app,cameraName)
 
     //console.log("InnerObjects ",state,tick,app)
 
@@ -134,6 +135,19 @@ const InnerObjects = ({state,tick,app}) =>
         gameObjects = state.attractObjects
 
     }
+
+    let camera = { position:{x:0, y:0} }
+
+    if(cameraName)
+    {
+        let cameraObject = FindGameObject(gameObjects,cameraName)
+        if(cameraObject)
+        {
+            camera = cameraObject
+        }
+    }
+
+
     let objectList = gameObjects.map( (entry,index) =>
     {
         if(entry.renderComponent && entry.animation.frameIndex >=0 )
@@ -142,18 +156,30 @@ const InnerObjects = ({state,tick,app}) =>
             {
                 console.error(`WorldRenderer: object of type ${entry.type} has invalid frame index of ${entry.animation.frameIndex}, max is ${entry.renderComponent.gameData.frames}`)
             }
-        let extra = {}
-        if(entry.pixiFilter)
+            let extra = {}
+            if(entry.pixiFilter)
+                {
+                extra.ref = el => itemsRef.current[filterIndex++] = el
+            }
+            if(entry.scale)
             {
-            extra.ref = el => itemsRef.current[filterIndex++] = el
-        }
-        if(entry.scale)
-        {
-            extra.scale = entry.scale
-        }
+                extra.scale = entry.scale
+            }
+            let entryData = entry.render(entry)
+
+            let honorCamera = true
+            if("honorCamera" in entry)
+            {
+                honorCamera = entry.honorCamera
+            }
+            if(honorCamera)
+            {
+                entryData = { ...entryData,x:entryData.x-camera.position.x, y:entryData.y-camera.position.y,}
+            }
+
             return <entry.renderComponent
                     key={index}
-                    {...entry.render(entry) }
+                    {...entryData}
                     {...extra }
             />
         }

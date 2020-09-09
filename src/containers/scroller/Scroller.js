@@ -28,7 +28,7 @@ export const Scroller = ({state,tick}) => {
     <div className="Scroller" >
       <h2>Scroller</h2>
         <Stage options={OPTIONS}>
-            <WorldRenderer state={state} tick={tick} />
+            <WorldRenderer cameraName = "Camera" state={state} tick={tick} />
         </Stage>
     </div>
   );

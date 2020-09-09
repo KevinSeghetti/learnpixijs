@@ -7,6 +7,7 @@ import { CreatePlayerObject,PlayerStates } from './playerObject'
 import { CreateTiledMapObject } from 'modules/common/tiledMapObject'
 import { CreateAttractObject } from 'modules/common/attractObject'
 import { CreateGameObject, CreateTimedObject } from 'modules/common/gameObject'
+import { CreateCameraObject } from 'modules/common/cameraObject'
 import { CreateScoreObject } from 'modules/common/scoreObject'
 import { CreatePlayerStatsObject } from 'modules/common/playerStatsObject'
 import { CreateBulletObject } from 'modules/common/bulletObject'
@@ -99,6 +100,9 @@ const CreateGameObjects = () =>
                 RockComponent,0)
             )
     }
+
+    // camera object
+    objects.push(CreateCameraObject('Player'))
 
     // score object
     objects.push(CreateScoreObject(

@@ -2,7 +2,7 @@
 
 import { CreateGameObject } from 'modules/common/gameObject'
 import { PlayerStates } from 'modules/common/playerObject'
-import { Seconds,RatePerSecond, PixelsPerSecond } from 'modules/common/time'
+import { Seconds,RatePerSecond } from 'modules/common/time'
 import { CreatePlatformPositionAffector } from 'modules/common/positionAffectors'
 
 import CreateLogger from 'components/loggingConfig'
@@ -20,7 +20,6 @@ export const PlayerTick = (object,delta,clipping,keys,Callbacks,collisionList,st
 
     let newObject = object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state)
 
-    const playerSpeed = PixelsPerSecond(250)
     const deadTime = Seconds(2)
 
     let lastGenerated = object.lastGenerated

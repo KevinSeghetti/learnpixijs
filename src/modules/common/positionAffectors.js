@@ -1,6 +1,6 @@
 // modules/common/positionAffectors.js
 
-import { FindGameObjects } from 'modules/common/gameObject'
+import { FindGameObjects,FindGameObject } from 'modules/common/gameObject'
 import { FindTileInMap } from 'modules/common/tiledMapObject'
 import { PixelsPerSecond } from 'modules/common/time'
 
@@ -243,6 +243,53 @@ export const CreatePlatformPositionAffector = (x,y,rotation,platformName) =>
         tick: PlatformPositionAffectorTick,
     }
 }
+
+//===============================================================================
+
+const ObjectFollowPositionAffectorTick = (object,delta,clipping,gameObjects/*,keys*/) =>
+{
+    let newPosition = object.position
+    let followObject = FindGameObject(gameObjects,object.followName)
+    if(followObject)
+    {
+        newPosition =
+        {
+            x:followObject.position.x+object.positionOffset.x,
+            y:followObject.position.y+object.positionOffset.y,
+        }
+    }
+    return (
+    {
+        ...object,
+        position: newPosition,
+    }
+    )
+}
+
+//===============================================================================
+
+export const CreateObjectFollowPositionAffector = (name,positionOffset) =>
+{
+    return {
+        position:
+        {
+            x:0,
+            y:0,
+            r: 0,
+        },
+        velocity:
+        {
+            x: 0,
+            y: 0,
+            r: 0,
+        },
+        tick: ObjectFollowPositionAffectorTick,
+        followName: name,
+        positionOffset,
+        invert: true,
+    }
+}
+
 
 //===============================================================================
 

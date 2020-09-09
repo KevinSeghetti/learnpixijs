@@ -37,32 +37,32 @@ export const TiledMapTick = (object,delta,clipping,keys,Callbacks,collisionList,
     }
 
 
-//  if(keys.plus &&  newTileMapXPer > 5)
-//  {
-//      newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
-//  }
-//  if(keys.minus &&  newTileMapXPer < 128)
-//  {
-//      newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
-//  }
-//
-//  if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
-//  {
-//      newTileMapXOffset = newTileMapXOffset - (mapSpeed * delta)
-//  }
-//  if(keys.arrowRight &&  newTileMapXOffset < movementClipping.max.x)
-//  {
-//      newTileMapXOffset = newTileMapXOffset + (mapSpeed * delta)
-//  }
-//
-//  if(keys.arrowUp &&  newTileMapYOffset > movementClipping.min.x)
-//  {
-//      newTileMapYOffset = newTileMapYOffset - (mapSpeed * delta)
-//  }
-//  if(keys.arrowDown &&  newTileMapYOffset < movementClipping.max.x)
-//  {
-//      newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
-//  }
+    if(keys.plus &&  newTileMapXPer > 5)
+    {
+        newTileMapXPer = newTileMapXPer - (zoomSpeed * delta)
+    }
+    if(keys.minus &&  newTileMapXPer < 128)
+    {
+        newTileMapXPer = newTileMapXPer + (zoomSpeed * delta)
+    }
+
+    if(keys.arrowLeft &&  newTileMapXOffset > movementClipping.min.x)
+    {
+        newTileMapXOffset = newTileMapXOffset - (mapSpeed * delta)
+    }
+    if(keys.arrowRight &&  newTileMapXOffset < movementClipping.max.x)
+    {
+        newTileMapXOffset = newTileMapXOffset + (mapSpeed * delta)
+    }
+
+    if(keys.arrowUp &&  newTileMapYOffset > movementClipping.min.x)
+    {
+        newTileMapYOffset = newTileMapYOffset - (mapSpeed * delta)
+    }
+    if(keys.arrowDown &&  newTileMapYOffset < movementClipping.max.x)
+    {
+        newTileMapYOffset = newTileMapYOffset + (mapSpeed * delta)
+    }
 
     return {
         ...object.baseTick(object,delta,clipping,keys,Callbacks,collisionList,state) ,
@@ -106,7 +106,8 @@ export const CreateTiledMapObject = (x,y, renderComponent, name, tileMapXPer) =>
             tileMapXOffset: 0,
             tileMapYOffset: 0,
             tileMapXPer,
-        }
+        },
+        honorCamera: false,
     }
 }
 

@@ -15,7 +15,7 @@ var defaultLoggingLevel='ERROR'
 export var appLoggingLevels       = {
     //'gameObject'        : "TRACE",
     //'playerObject'      : "TRACE",
-    'positionAffectors' : "TRACE",
+    //'positionAffectors' : "TRACE",
     //'tiledMapObject' : "TRACE",
 }
 
