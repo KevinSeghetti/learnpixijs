@@ -158,7 +158,8 @@ export const GameObjectUpdatePositionAffectors = (object,delta,clipping,gameObje
     //log.trace("GameObjectUpdatePostionAffectors:",object,delta,clipping,gameObjects,keys)
     return object.positionAffectors.map( (entry) =>
         {
-            return entry.tick(entry,delta,clipping,gameObjects,keys)
+            log.trace("GameObjectUpdatePostionAffectors:entry",entry)
+            return entry.tick(entry, object, delta,clipping,gameObjects,keys)
         }
     )
 }

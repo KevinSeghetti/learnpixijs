@@ -52,7 +52,7 @@ const MoveObject = (object, delta,clipping) =>
 //===============================================================================
 // position affectors
 
-const VelocityPositionAffectorTick = (object,delta,clipping/*,gameObjects,keys*/) =>
+const VelocityPositionAffectorTick = (affector,object,delta,clipping/*,gameObjects,keys*/) =>
 {
     const VelocityUpdateObjectSpeed = (position,velocity,delta,clipping) =>
     {
@@ -75,12 +75,12 @@ const VelocityPositionAffectorTick = (object,delta,clipping/*,gameObjects,keys*/
         }
     }
 
-    let newPos = MoveObject(object,delta,clipping)
-    let velocity = VelocityUpdateObjectSpeed(newPos,object.velocity,delta,clipping)
+    let newPos = MoveObject(affector,delta,clipping)
+    let velocity = VelocityUpdateObjectSpeed(newPos,affector.velocity,delta,clipping)
 
     return (
     {
-        ...object,
+        ...affector,
         position: newPos,
         velocity: velocity,
     }
@@ -109,10 +109,20 @@ export const CreateVelocityPositionAffector = (x,y,rotation,vx,vy,rv) =>
 }
 
 //===============================================================================
-
-const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
+// kts TODO move this elsewhere
+// form AABB bounding box, around where we were and where we are going
+let SurroundingBox = (pos1, pos2, size) =>
 {
-    //log.trace("PlatformPositionAffectorTick",object,delta,clipping,gameObjects)
+    let min = { x:Math.min(pos1.x,pos2.x), y:Math.min(pos1.y,pos2.y) }
+    let max = { x:Math.min(pos1.x+size.x,pos2.x+size.x), y:Math.min(pos1.y+size.y,pos2.y+size.y) }
+    return {min, max}
+}
+
+//===============================================================================
+
+const PlatformPositionAffectorTick = (affector,object,delta,clipping,gameObjects,keys) =>
+{
+    log.trace("PlatformPositionAffectorTick",affector,delta,clipping,gameObjects)
 
     const playerSpeed = PixelsPerSecond(250)
 
@@ -149,9 +159,9 @@ const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
         )
     }
 
-    let newPos = MoveObject(object,delta,clipping)
-    log.trace("PlatformPositionAffectorTick: newPos",newPos,clipping,object)
-    let acceleration = object.acceleration
+    let newPos = MoveObject(affector,delta,clipping)
+    log.trace("PlatformPositionAffectorTick: newPos",newPos,clipping,affector)
+    let acceleration = affector.acceleration
 
     acceleration.x = 0
 
@@ -181,25 +191,106 @@ const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
         }
 
     }
-    let velocity = PlatformUpdateObjectSpeed(object.velocity,acceleration,delta,speedClipping)
+    let velocity = PlatformUpdateObjectSpeed(affector.velocity,acceleration,delta,speedClipping)
 
-    // now check to see if we are standing on anything
-    // kts TODO: make an AABB of old position to new position, to make sure we don't fall through anything
+    // now check to see if we have collided with anything in the tile map
+
+    let movementBox = SurroundingBox(affector.position, newPos, object.renderComponent.gameData.size)
+    //console.log("@@",movementBox)
+    // ok, which way are we going
+
+
     platformObjects.forEach( (entry) =>
     {
         // for each platform, look up our current position in it
         //log.trace("PlatformPositionAffectorTick: check",entry.renderComponent.gameData.map)
-        let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,newPos)
-        if(tileIndex !== 0)
+
+
+        let hitSomething = false
+        let tileXSize = entry.renderComponent.gameData.map.tilewidth
+        let tileYSize = entry.renderComponent.gameData.map.tileheight
+        for(let x = movementBox.min.x; x < movementBox.max.x;x+=tileXSize)
         {
-            newPos.y = object.position.y
-            velocity =
-                    {
-                        ...velocity,
-                        y:0,
-                    }
+            for(let y = movementBox.min.y; y < movementBox.max.y;y+=tileYSize)
+            {
+                let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,newPos)
+                if(tileIndex !== 0)
+                {
+                    hitSomething = true
+                }
+            }
+        }
+
+        if(hitSomething)
+        {
+            // ok, time to do sub-frame advancement, one pixel at a time
+            let xDelta = newPos.x-affector.position.x
+            let yDelta = newPos.y-affector.position.y
+            let stepCount = Math.ceil(Math.max(Math.abs(xDelta),Math.abs(yDelta)))
+
+            let prevX = affector.position.x
+            let prevY = affector.position.y
+            let xStep = xDelta/stepCount
+            let yStep = yDelta/stepCount
+            let newX = prevX
+            let newY = prevY
+
+            log.trace("PlatformPositionAffectorTick:subframe",{origPos:affector.position,newPos, stepCount,xDelta, yDelta,xStep,yStep})
+
+            for(let step = 1; step <= stepCount;step++)
+            {   // bressenham style, increment through both movements together, but only one at a time
+                newX = affector.position.x+(xStep*step)
+                newY = affector.position.y+(yStep*step)
+                //console.log("@@",step,xStep,yStep,newX,newY)
+                if(step === stepCount)
+                {
+                    log.trace("PlatformPositionAffectorTick:newpos",{newX,newY,step,stepCount})
+                    log.trace("PlatformPositionAffectorTick:newdelta",xStep*step,yStep*step)
+                }
+
+                let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,{x:newX,y:prevY})
+                if(tileIndex !== 0)
+                {
+                    newX = prevX        // stop updating X if we hit
+                    xStep = 0
+                    log.trace("PlatformPositionAffectorTick:X hit",step)
+                }
+
+                tileIndex = FindTileInMap(entry.renderComponent.gameData.map,{x:newX,y:newY})
+                if(tileIndex !== 0)
+                {
+                    newY = prevY        // stop updating Y if we hit
+                    yStep = 0
+                        log.trace("PlatformPositionAffectorTick:Y hit",step)
+                }
+
+                prevX=newX
+                prevY=newY
+            }
+
+            log.trace("PlatformPositionAffectorTick: results",{origpos:affector.position, newPos,newX,newY})
+            newPos = { x:newX, y:newY,r:0}
+            //newPos = affector.position
+//              velocity =
+//                      {
+//                          x:0,
+//                          y:0,
+//                          r:0,
+//                      }
 
         }
+
+//      let tileIndex = FindTileInMap(entry.renderComponent.gameData.map,newPos)
+//      if(tileIndex !== 0)
+//      {
+//          newPos.y = affector.position.y
+//          velocity =
+//                  {
+//                      ...velocity,
+//                      y:0,
+//                  }
+//
+//      }
     }
     )
 
@@ -207,7 +298,7 @@ const PlatformPositionAffectorTick = (object,delta,clipping,gameObjects,keys) =>
 
     return (
     {
-        ...object,
+        ...affector,
         position: newPos,
         velocity: velocity,
     }
@@ -246,21 +337,21 @@ export const CreatePlatformPositionAffector = (x,y,rotation,platformName) =>
 
 //===============================================================================
 
-const ObjectFollowPositionAffectorTick = (object,delta,clipping,gameObjects/*,keys*/) =>
+const ObjectFollowPositionAffectorTick = (affector,object,delta,clipping,gameObjects/*,keys*/) =>
 {
-    let newPosition = object.position
-    let followObject = FindGameObject(gameObjects,object.followName)
+    let newPosition = affector.position
+    let followObject = FindGameObject(gameObjects,affector.followName)
     if(followObject)
     {
         newPosition =
         {
-            x:followObject.position.x+object.positionOffset.x,
-            y:followObject.position.y+object.positionOffset.y,
+            x:followObject.position.x+affector.positionOffset.x,
+            y:followObject.position.y+affector.positionOffset.y,
         }
     }
     return (
     {
-        ...object,
+        ...affector,
         position: newPosition,
     }
     )

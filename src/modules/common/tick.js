@@ -13,27 +13,19 @@ export const GameStates =
 }
 
 //===============================================================================
+// AABB collision check
 
-const CheckCollision = (first,second) =>
+export const CheckCollision = (firstPosition, firstSize, secondPosition, secondSize) =>
 {
-    //console.log("CheckCollision:first",first)
-    //console.log("CheckCollision:second",second)
-    if(first.renderComponent && second.renderComponent)
+    //console.log("CheckCollision:first",firstPosition, firstSize)
+    //console.log("CheckCollision:second",secondPosition, secondSize)
+    if(
+        firstPosition.x               < secondPosition.x + secondSize.x &&
+        firstPosition.x + firstSize.x > secondPosition.x &&
+        firstPosition.y               < secondPosition.y + secondSize.y &&
+        firstPosition.y + firstSize.y > secondPosition.y)
     {
-        if(first.renderComponent.gameData && second.renderComponent.gameData)
-        {
-            let firstSize = first.renderComponent.gameData.size
-            let secondSize = second.renderComponent.gameData.size
-
-            if(
-                first.position.x               < second.position.x + secondSize.x &&
-                first.position.x + firstSize.x > second.position.x &&
-                first.position.y               < second.position.y + secondSize.y &&
-                first.position.y + firstSize.y > second.position.y)
-            {
-                return true
-            }
-        }
+        return true
     }
     return false
 }
@@ -80,9 +72,15 @@ export const GameTick = (state,delta,keys,clipping) =>
                     {
                         innerCollides = innerEntry.collision.collides
                     }
-                    if(index !== innerIndex && CheckCollision(entry,innerEntry) && innerCollides)
+                    if(index !== innerIndex)
                     {
-                        collisionList[index].push(innerEntry)       // trust javascript to make these references
+                        if(entry.renderComponent && innerEntry.renderComponent)
+                        {
+                            if(CheckCollision(entry.position,entry.renderComponent.gameData.size,innerEntry.position,innerEntry.renderComponent.gameData.size) && innerCollides)
+                            {
+                                collisionList[index].push(innerEntry)       // trust javascript to make these references
+                            }
+                        }
                     }
                 }
             )
