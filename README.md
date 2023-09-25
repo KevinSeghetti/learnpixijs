@@ -1,4 +1,4 @@
-This project started as a programming challenge for a job interview to make a scrolling map in Gl ES2. 
+This project started as a programming challenge for a job interview to make a scrolling map in WebGL. 
 So I wrote a shader that renders an entire tiled scrolling playfield with a single shander call.
 (for some reason the interviewer expected me to make a shader call per
 map tile, iterating the map on the processor side, but that would be far
